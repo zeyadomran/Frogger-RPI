@@ -1,7 +1,3 @@
-// CPSC 359 Project Part 1.
-// Created by: Zeyad Omran (30096692) and Mohamed El Hefnawy (30093687).
-// This program is a simple driver for a SNES Controller.
-
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
