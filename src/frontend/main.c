@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 #include "framebuffer.h"
+#include "../backend/SNESDRIVER/SNES_DRIVER.c"
 
 /* Definitions */
 typedef struct {
@@ -16,7 +17,6 @@ void drawPixel(Pixel *pixel);
 
 /* main function */
 int main(){
-
 	/* initialize + get FBS */
 	framebufferstruct = initFbInfo();
 	
@@ -41,6 +41,12 @@ int main(){
 	free(pixel);
 	pixel = NULL;
 	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
+	int button = -1;
+	while(button == -1) {
+		button = getButtonPressed();
+		delay(125);
+	}
+	printf(button);
 	return 0;
 }
 
