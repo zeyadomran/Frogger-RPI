@@ -18,8 +18,8 @@ OBJECTS := $(patsubst $(SOURCE)%.s,$(BUILD)%.o,$(wildcard $(SOURCE)*.s))
 COBJECTS := $(patsubst $(SOURCE)%.c,$(BUILD)%.o,$(wildcard $(SOURCE)*.c))
 
 # Rule to make the executable files.
-myProg: $(OBJECTS) $(COBJECTS)
-	gcc -lwiringPi -o myProg $(OBJECTS) $(COBJECTS)
+froggerGame: $(OBJECTS) $(COBJECTS)
+	gcc -lwiringPi -o froggerGame $(OBJECTS) $(COBJECTS)
 
 # Rule to make the object files.
 $(BUILD)%.o: $(SOURCE)%.s
@@ -30,5 +30,5 @@ $(BUILD)%.o: $(SOURCE)%.c
 
 # Rule to clean files.
 clean : 
-	-rm -f $(BUILD)*.o myProg
+	-rm -f $(BUILD)*.o froggerGame
 
