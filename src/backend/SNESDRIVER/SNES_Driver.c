@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "initGPIO.h"
+#include "SNES_Driver.h"
 #include <time.h>
 
 // Global Definitions for the GPIO Registers.
@@ -16,17 +17,6 @@
 #define DAT 10
 
 // Prototypes for the functions used.
-void INP_GPIO(int pin, unsigned int *gpioptr);
-void OUT_GPIO(int pin, unsigned int *gpioptr);
-void Init_GPIO(unsigned int *gpioptr);
-void Write_Latch(int write, unsigned int *gpioptr);
-void Write_Clock(int write, unsigned int *gpioptr);
-int Read_Data(unsigned int *gpioptr);
-void Read_SNES(unsigned int *gpioptr, int buttonArray[16]);
-void Print_Message(int buttonPressed);
-void resetButtonArray(int buttonArray[16]);
-int buttonPressed(int buttonArray[16]);
-int getButtonPressed();
 
 /**
     INP_GPIO sets a Pin to be an Input.
@@ -135,7 +125,7 @@ int buttonPressed(int buttonArray[16]) {
     Gets the latest button pressed.
     @return the button pressed : -1 if no button was pressed.
 */
-int getButtonPressed() {
+int getButtonPressed(void) {
     unsigned int *gpioPtr = getGPIOPtr();
     int buttonArray[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}; 
 	Init_GPIO(gpioPtr);
