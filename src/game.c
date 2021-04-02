@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include "game.h"
 
 /* Global Variables */
 struct gameState state;
@@ -11,10 +12,10 @@ void loadGameMap(void) {
         for(int i = 0; i < CELLSY; i++) {
             for(int j = 0; j < CELLSX; j++) {
                 state.gameMap[i][j] = BLACKBG;
-                if((i == 2) && (j == 9)) state.gameMap[i][j] = TITLE;
+                if((i == 12) && (j == 12)) state.gameMap[i][j] = TITLE;
                 if((i == 7) &&(j == 16)) state.gameMap[i][j] = STARTGAME;
                 if((i == 11) &&(j == 16)) state.gameMap[i][j] = QUITGAME;
-                if((i == (CELLSY - 1))) state.gameMap[i][j] = CREATORS;
+                if((i == (CELLSY - 1)) && (j == (CELLSX - 1))) state.gameMap[i][j] = CREATORS;
             }
         }
     }/* else if (state.scene == 1) {

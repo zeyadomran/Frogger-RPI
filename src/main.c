@@ -14,7 +14,9 @@ typedef struct {
 } Pixel;
 
 struct fbs framebufferstruct;
+struct gameState state;
 void drawPixel(Pixel *pixel);
+void loadIMG(unsigned int height, unsigned int width, short int* ptr, Pixel *pixel, int yStart, int xStart);
 
 /* Definitions */
 #define WIDTH 1260
@@ -28,7 +30,7 @@ int main(){
 	
 	/* Initialize Game */
 	initializeState();
-	struct gameState state = getState(); // Get game state
+	state = getState(); // Get game state
 	
 	/* initialize a pixel */
 	Pixel *pixel;
@@ -36,10 +38,10 @@ int main(){
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {	
-				pixel->color = 0x000000; // Black
-				pixel->x = x;
-				pixel->y = y;
-				drawPixel(pixel);
+			pixel->color = 0x000000; // Black
+			pixel->x = x;
+			pixel->y = y;
+			drawPixel(pixel);
 		}
 	}
 
@@ -62,9 +64,9 @@ int main(){
 				short int *quitPtr=(short int *) quitButton_inactive.pixel_data;
 				loadIMG(quitButton_inactive.height, quitButton_inactive.width, quitPtr, pixel, i, j);
 			}
-			printf(" %d", state.gameMap[i][j]);
+			//printf(" %d", state.gameMap[i][j]);
 		}
-		printf("\n");
+		//printf("\n");
 	}
 
 	/* free pixel's allocated memory */
@@ -83,11 +85,10 @@ void drawPixel(Pixel *pixel){
 /**
  * Takes a char image and display's it
  */
-void loadIMG(unsigned int height, unsigned int width, short int* ptr, Pixel *pixel, int i, int j) {
+void loadIMG(unsigned int height, unsigned int width, short int* ptr, Pixel *pixel, int yStart, int xStart) {
 	int i=0;
-	unsigned int quarter,byte,word;
-	for (int y = i; y < height; y++) {
-		for (int x = j; x < width; x++) { 
+	for (int y = yStart * 35; y < height; y++) {
+		for (int x = xStart * 35; x < width; x++) { 
 			pixel->color = ptr[i]; 
 			pixel->x = x;
 			pixel->y = y;
