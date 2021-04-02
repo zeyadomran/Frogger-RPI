@@ -6,18 +6,6 @@
 #include "SNES_Driver.h"
 #include <time.h>
 
-// Global Definitions for the GPIO Registers.
-#define GPLEV0 13
-#define GPSET0 7
-#define GPCLR0 10
-
-// Global Definitions for the CLOCK, LATCH, & DATA line Pin Number.
-#define CLK 11
-#define LAT 9
-#define DAT 10
-
-// Prototypes for the functions used.
-
 /**
     INP_GPIO sets a Pin to be an Input.
     @param pin, pin is an integer which stores the location of the pin you want to be an input.
