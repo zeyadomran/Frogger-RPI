@@ -7,8 +7,9 @@
 #include <stdbool.h>
 #include "main.h"
 
-/* The frame buffer struct */
+/* The frame buffer struct. */
 struct fbs framebufferstruct;
+/* The game's state. */
 shared state;
 
 /* main function */
@@ -31,40 +32,41 @@ int main(void) {
 	/* Program loop */
 	while(true) {
 		int button = getButtonPressed(); // Gets button pressed by SNES controller.
-		if(state.showStartMenu) {
+		if(state.showStartMenu) { // Checks if we are in the start menu.
 			if((button == JD) && (activeButton == 1)) {
 				activeButton = 2;
 				drawStartScreen(pixel, activeButton);
 			} else if((button == JU) && (activeButton == 2)) {
 				activeButton = 1;
 				drawStartScreen(pixel, activeButton);
-			} else if((button == A) && (activeButton == 1)) {
+			} else if((button == A) && (activeButton == 1)) { // Starts game.
 				state.showStartMenu = false;
 				activeButton = 1;
-			} else if((button == A) && (activeButton == 2)) {
+			} else if((button == A) && (activeButton == 2)) { // Exits game.
 				exit(0);
 			}
 		} else {
-			if(state.showGameMenu) {
+			if(state.showGameMenu) { // Checks if the game is paused.
 				if((button == JD) && (activeButton == 1)) {
 					activeButton = 2;
 					drawPauseMenu(pixel, activeButton);
 				} else if((button == JU) && (activeButton == 2)) {
 					activeButton = 1;
 					drawPauseMenu(pixel, activeButton);
-				} else if((button == A) && (activeButton == 1)) {
+				} else if((button == A) && (activeButton == 1)) { // Resumes game.
 					state.showGameMenu = false;
 					activeButton = 1;
-				} else if((button == A) && (activeButton == 2)) {
+				} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
 					state.showGameMenu = false;
 					state.showStartMenu = true;
 				}
 			} else {
-				if(button == STR) {
+				if(button == STR) { // Pauses the game.
 					state.showGameMenu = true;
 				}
 			}
 		}
+		/* Delays the input to make sure that the SNES controller is not spamming. */
 		delay(125);
 	}
 

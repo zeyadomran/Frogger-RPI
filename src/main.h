@@ -38,6 +38,7 @@ typedef struct {
 int main(void);
 void drawStartScreen(Pixel *pixel, int type);
 void drawPauseMenu(Pixel *pixel, int activeButton);
+void drawImage(int starty, int startx, int height, int width, short int *ptr, Pixel *pixel);
 void drawPixel(Pixel *pixel);
 
 #endif

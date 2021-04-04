@@ -2,13 +2,14 @@
 #define game
 
 /* Definitions */
-/**
- *  Amount of cells in game map, each cell is 35x35 pixels large.
- */ 
+
+/* Amount of cells in game map, each cell is 35x35 pixels large. */ 
 #define CELLSX      32
 #define CELLSY      18
 
+/* A struct of the game's objects. */
 typedef struct {
+    char *type;
     int posX;
     int posY;
     int velocity;
@@ -16,7 +17,7 @@ typedef struct {
 
 /* The game's shared struct. */
 typedef struct {
-    Object gameMap[CELLSY][CELLSX];
+    Object * gameMap[CELLSY][CELLSX];
     bool showStartMenu;
     bool showGameMenu;
     int score;
@@ -30,7 +31,9 @@ typedef struct {
 } shared;
 
 /* Prototypes */
+
 void loadGameMap(shared state);
+void updateGameMap(shared state, char *type, int x, int y, int velocity);
 void initState(shared state);
 
 #endif
