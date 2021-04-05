@@ -34,15 +34,15 @@
 
 /* A struct of the game's objects. */
 typedef struct {
-    char *type;
-    int posX;
-    int posY;
-    int velocity;
+    char type[CELLSY][CELLSX];
+    int posX[CELLSY][CELLSX];
+    int posY[CELLSY][CELLSX];
+    int velocity[CELLSY][CELLSX];
 } Object;
 
 /* The game's shared struct. */
 typedef struct {
-    Object * gameMap[CELLSY][CELLSX];
+    Object gameMap;
     bool showStartMenu;
     bool showGameMenu;
     int score;

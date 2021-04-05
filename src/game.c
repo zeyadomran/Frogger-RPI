@@ -124,10 +124,10 @@ void loadGameMap(shared state) {
  *              The velocity of the object.
  */
 void updateCell(shared state, char *type, int x, int y, int velocity) {
-    state.gameMap[y][x]->type = type;
-    state.gameMap[y][x]->posX = x;
-    state.gameMap[y][x]->posY = y;
-    state.gameMap[y][x]->velocity = velocity;
+    state.gameMap.type[y][x] = type;
+    state.gameMap.posX[y][x] = x;
+    state.gameMap.posY[y][x] = y;
+    state.gameMap.velocity[y][x] = velocity;
 }
 
 /**
@@ -148,11 +148,6 @@ int getRandomNum(int lowerLimit, int upperLimit) { return ((rand() % ((upperLimi
  *              The State you wish to initialize. 
  */
 void initState(shared state) {
-    for(int i = 0; i < CELLSY; i++) {
-        for(int j = 0; j < CELLSX; j++) {
-            state.gameMap[i][j] = (Object ***) malloc(sizeof(Object));
-        }
-    }
     state.showStartMenu = true;
     state.showGameMenu = false;
     state.score = 0;
