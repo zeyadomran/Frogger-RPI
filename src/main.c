@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 #include <stdbool.h>
+#include <time.h>
 #include "main.h"
 
 /* The frame buffer struct. */
@@ -23,49 +24,59 @@ int main(void) {
 	pixel = malloc(sizeof(Pixel));
 
 	/* Initialization */
-	initState(state);
+	initState(&state);
 
 	int activeButton = 1;
 	/* Draws the start Screen */
+	clearConsole();
 	drawStartScreen(pixel, activeButton);
-	
+	srand(time(0));
 	/* Program loop */
 	while(true) {
 		int button = getButtonPressed(); // Gets button pressed by SNES controller.
 		if(state.showStartMenu) { // Checks if we are in the start menu.
 			if((button == JD) && (activeButton == 1)) {
 				activeButton = 2;
+				clearConsole();
 				drawStartScreen(pixel, activeButton);
 			} else if((button == JU) && (activeButton == 2)) {
 				activeButton = 1;
+				clearConsole();
 				drawStartScreen(pixel, activeButton);
 			} else if((button == A) && (activeButton == 1)) { // Starts game.
 				state.showStartMenu = false;
 				activeButton = 1;
+				clearConsole();
 				refreshBoard(pixel, state);
 			} else if((button == A) && (activeButton == 2)) { // Exits game.
+				clearConsole();
 				exit(0);
 			}
 		} else {
 			if(state.showGameMenu) { // Checks if the game is paused.
 				if((button == JD) && (activeButton == 1)) {
 					activeButton = 2;
+					clearConsole();
 					drawPauseMenu(pixel, activeButton);
 				} else if((button == JU) && (activeButton == 2)) {
 					activeButton = 1;
+					clearConsole();
 					drawPauseMenu(pixel, activeButton);
 				} else if((button == A) && (activeButton == 1)) { // Resumes game.
 					state.showGameMenu = false;
 					activeButton = 1;
+					clearConsole();
 					refreshBoard(pixel, state);
 				} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
 					state.showGameMenu = false;
 					state.showStartMenu = true;
+					drawStartScreen(pixel, 1);
 				}
 			} else {
 				if(button == STR) { // Pauses the game.
 					state.showGameMenu = true;
-					drawPauseMenu(pixel, activeButton);
+					clearConsole();
+					drawPauseMenu(pixel, 1);
 				}
 			}
 		}
@@ -83,90 +94,92 @@ int main(void) {
 void refreshBoard(Pixel *pixel, shared state) {
 	for(int i = 0; i < CELLSY; i++) {
 		for(int j = 0; j < CELLSX; j++) {
-			char *cellType;
+			char cellType;
 			short int *imagePtr;
 			int height;
 			int width;
 			cellType = state.gameMap.type[i][j];
-			if(strcmp(cellType, CASTLE) == 0) {
+			if(cellType == CASTLE) {
 				imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
 				height = (int) GRNBORDERIMAGE.height;
 				width = (int) GRNBORDERIMAGE.width;
-			} else if(strcmp(cellType, BLUBORDER) == 0) {
+			} else if(cellType == BLUBORDER) {
 				imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
 				height = (int) BLUBORDERIMAGE.height;
 				width = (int) BLUBORDERIMAGE.width;
-			} else if(strcmp(cellType, REDBORDER) == 0) {
+			} else if(cellType == REDBORDER) {
 				imagePtr = (short int *) REDBORDERIMAGE.pixel_data;
 				height = (int) REDBORDERIMAGE.height;
 				width = (int) REDBORDERIMAGE.width;
-			} else if(strcmp(cellType, GRNBORDER) == 0) {
+			} else if(cellType == GRNBORDER) {
 				imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
 				height = (int) GRNBORDERIMAGE.height;
 				width = (int) GRNBORDERIMAGE.width;
-			} else if(strcmp(cellType, BLKBORDER) == 0) {
+			} else if(cellType == BLKBORDER) {
 				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
 				height = (int) BLKBORDERIMAGE.height;
 				width = (int) BLKBORDERIMAGE.width;
-			} else if(strcmp(cellType, ZOMBIE1) == 0) {
+			} else if(cellType == ZOMBIE1) {
 				imagePtr = (short int *) ZOMBIE1IMAGE.pixel_data;
 				height = (int) ZOMBIE1IMAGE.height;
 				width = (int) ZOMBIE1IMAGE.width;
-			} else if(strcmp(cellType, ZOMBIE2) == 0) {
+			} else if(cellType == ZOMBIE2) {
 				imagePtr = (short int *) ZOMBIE2IMAGE.pixel_data;
 				height = (int) ZOMBIE2IMAGE.height;
 				width = (int) ZOMBIE2IMAGE.width;
-			} else if(strcmp(cellType, TILE) == 0) {
+			} else if(cellType == TILE) {
 				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
 				height = (int) BLKBORDERIMAGE.height;
 				width = (int) BLKBORDERIMAGE.width;
-			}else if(strcmp(cellType, SPACESHIP1) == 0) {
+			}else if(cellType == SPACESHIP1) {
 				imagePtr = (short int *) SPACESHIP1IMAGE.pixel_data;
 				height = (int) SPACESHIP1IMAGE.height;
 				width = (int) SPACESHIP1IMAGE.width;
-			} else if(strcmp(cellType, SPACESHIP2) == 0) {
+			} else if(cellType == SPACESHIP2) {
 				imagePtr = (short int *) SPACESHIP2IMAGE.pixel_data;
 				height = (int) SPACESHIP2IMAGE.height;
 				width = (int) SPACESHIP2IMAGE.width;
-			} else if(strcmp(cellType, SPACE) == 0) {
+			} else if(cellType == SPACE) {
 				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
 				height = (int) BLKBORDERIMAGE.height;
 				width = (int) BLKBORDERIMAGE.width;
-			} else if(strcmp(cellType, LOG) == 0) {
+			} else if(cellType == LOG) {
 				imagePtr = (short int *) LOGIMAGE.pixel_data;
 				height = (int) LOGIMAGE.height;
 				width = (int) LOGIMAGE.width;
-			} else if(strcmp(cellType, TURTLE) == 0) {
+			} else if(cellType == TURTLE) {
 				imagePtr = (short int *) TURTLEIMAGE.pixel_data;
 				height = (int) TURTLEIMAGE.height;
 				width = (int) TURTLEIMAGE.width;
-			} else if(strcmp(cellType, WATER) == 0) {
+			} else if(cellType == WATER) {
 				imagePtr = (short int *) WATERIMAGE.pixel_data;
 				height = (int) WATERIMAGE.height;
 				width = (int) WATERIMAGE.width;
-			} else if(strcmp(cellType, CAR1) == 0) {
+			} else if(cellType == CAR1) {
 				imagePtr = (short int *) CAR1IMAGE.pixel_data;
 				height = (int) CAR1IMAGE.height;
 				width = (int) CAR1IMAGE.width;
-			} else if(strcmp(cellType, CAR2) == 0) {
+			} else if(cellType == CAR2) {
 				imagePtr = (short int *) CAR2IMAGE.pixel_data;
 				height = (int) CAR2IMAGE.height;
 				width = (int) CAR2IMAGE.width;
-			} else if(strcmp(cellType, ROAD) == 0) {
+			} else if(cellType == ROAD) {
 				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
 				height = (int) BLKBORDERIMAGE.height;
 				width = (int) BLKBORDERIMAGE.width;
-			} else if(strcmp(cellType, PLAYER) == 0) {
+			} else if(cellType == PLAYER) {
 				imagePtr = (short int *) PLAYERIMAGE.pixel_data;
 				height = (int) PLAYERIMAGE.height;
 				width = (int) PLAYERIMAGE.width;
-			} else if(strcmp(cellType, INFO) == 0) {
+			} else {
 				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
 				height = (int) BLKBORDERIMAGE.height;
 				width = (int) BLKBORDERIMAGE.width;
 			}
+			int starty = (STARTY + (i * 40));
+			int startx = (STARTX + (j * 40));
 			// Draw the loaded image.
-			drawImage((STARTY * (i * CELLSY)), (STARTX * (j * CELLSX)), height, width, imagePtr, pixel);
+			drawImage(starty, startx, height, width, imagePtr, pixel);
 		}
 	}
 }
@@ -213,7 +226,7 @@ void drawPauseMenu(Pixel *pixel, int activeButton) {
 	int width;
 
 	// Initializing Variables based on state
-	if(activeButton == 2) {
+	if(activeButton == 1) {
 		pauseMenuPtr = (short int *) PauseMenu1.pixel_data;
 		height = (int) PauseMenu1.height;
 		width = (int) PauseMenu1.width;
@@ -223,8 +236,10 @@ void drawPauseMenu(Pixel *pixel, int activeButton) {
 		width = (int) PauseMenu2.width;
 	}
 	
+	int starty = (STARTY + 120);
+	int startx = (STARTX + 400);
 	// Draw Image
-	drawImage((STARTY + 120), (STARTX + 400), height, width, pauseMenuPtr, pixel);
+	drawImage(starty, startx, height, width, pauseMenuPtr, pixel);
 }
 
 

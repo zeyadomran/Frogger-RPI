@@ -8,29 +8,29 @@
 #define CELLSY      18
 
 /* Object type definitions. */
-#define CASTLE      "CASTLE"
-#define BLUBORDER   "BLUBORDER"
-#define REDBORDER   "REDBORDER"
-#define GRNBORDER   "GRNBORDER"
-#define BLKBORDER   "BLKBORDER"
+#define CASTLE      'C'
+#define BLUBORDER   'B'
+#define REDBORDER   'R'
+#define GRNBORDER   'G'
+#define BLKBORDER   'K'
 // Challenge 4
-#define ZOMBIE1     "ZOMBIE1"
-#define ZOMBIE2     "ZOMBIE2"
-#define TILE        "TILE"
+#define ZOMBIE1     'Z'
+#define ZOMBIE2     'Y'
+#define TILE        'T'
 // Challenge 3
-#define SPACESHIP1  "SPACESHIP1"
-#define SPACESHIP2  "SPACESHIP2"
-#define SPACE       "SPACE"
+#define SPACESHIP1  'S'
+#define SPACESHIP2  'Q'
+#define SPACE       'O'
 // Challenge 2
-#define LOG         "LOG"
-#define TURTLE      "TURTLE"
-#define WATER       "WATER"
+#define LOG         'L'
+#define TURTLE      'N'
+#define WATER       'W'
 // Challenge 1
-#define CAR1        "CAR1"
-#define CAR2        "CAR2"
-#define ROAD        "ROAD"
-#define PLAYER      "PLAYER"
-#define INFO        "INFO"
+#define CAR1        'V'
+#define CAR2        'X'
+#define ROAD        'I'
+#define PLAYER      'P'
+#define INFO        'U'
 
 /* A struct of the game's objects. */
 typedef struct {
@@ -57,9 +57,9 @@ typedef struct {
 
 /* Prototypes */
 
-void loadGameMap(shared state);
-void updateCell(shared state, char *type, int x, int y, int velocity);
-void initState(shared state);
+void loadGameMap(shared * state);
+void updateCell(shared * state, char type, int x, int y, int velocity);
+void initState(shared * state);
 int getRandomNum(int lowerLimit, int upperLimit);
 
 #endif

@@ -13,6 +13,9 @@ typedef struct {
 	int x, y;
 } Pixel;
 
+/* Clears the screen. */
+#define clearConsole() printf("\e[1;1H\e[2J")
+
 /* Dimensions */
 #define WIDTH   1280
 #define HEIGHT  760
