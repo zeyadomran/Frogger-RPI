@@ -42,6 +42,7 @@ int main(void) {
 			} else if((button == A) && (activeButton == 1)) { // Starts game.
 				state.showStartMenu = false;
 				activeButton = 1;
+				refreshBoard(pixel, state);
 			} else if((button == A) && (activeButton == 2)) { // Exits game.
 				exit(0);
 			}
@@ -56,6 +57,7 @@ int main(void) {
 				} else if((button == A) && (activeButton == 1)) { // Resumes game.
 					state.showGameMenu = false;
 					activeButton = 1;
+					refreshBoard(pixel, state);
 				} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
 					state.showGameMenu = false;
 					state.showStartMenu = true;
@@ -77,6 +79,54 @@ int main(void) {
 	return 0;
 }
 
+void refreshBoard(Pixel *pixel, shared state) {
+	for(int i = 0; i < CELLSY; i++) {
+		for(int j = 0; j < CELLSX; j++) {
+			char *cellType;
+			int height;
+			int width;
+			cellType = state.gameMap[i][j]->type;
+			if(strcmp(cellType, CASTLE) == 0) {
+
+			} else if(strcmp(cellType, BLUBORDER) == 0) {
+
+			} else if(strcmp(cellType, REDBORDER) == 0) {
+
+			} else if(strcmp(cellType, GRNBORDER) == 0) {
+
+			} else if(strcmp(cellType, BLKBORDER) == 0) {
+
+			} else if(strcmp(cellType, ZOMBIE1) == 0) {
+
+			} else if(strcmp(cellType, ZOMBIE2) == 0) {
+
+			} else if(strcmp(cellType, SPACESHIP1) == 0) {
+
+			} else if(strcmp(cellType, SPACESHIP2) == 0) {
+
+			} else if(strcmp(cellType, SPACE) == 0) {
+
+			} else if(strcmp(cellType, LOG) == 0) {
+
+			} else if(strcmp(cellType, LILYPAD) == 0) {
+
+			} else if(strcmp(cellType, WATER) == 0) {
+
+			} else if(strcmp(cellType, CAR1) == 0) {
+
+			} else if(strcmp(cellType, CAR2) == 0) {
+
+			} else if(strcmp(cellType, ROAD) == 0) {
+
+			} else if(strcmp(cellType, PLAYER) == 0) {
+
+			} else if(strcmp(cellType, INFO) == 0) {
+
+			}
+		}
+	}
+}
+
 /**
  *  Draws the Start Menu.
  *  @param pixel 
@@ -90,7 +140,7 @@ void drawStartScreen(Pixel *pixel, int activeButton) {
 	int height;
 	int width;
 	
-	// Initatializing Variables based on state
+	// Initializing Variables based on state
 	if(activeButton == 1) {
 		startScreenPtr = (int *) StartScreen1.pixel_data;
 		height = (int) StartScreen1.height;
@@ -118,7 +168,7 @@ void drawPauseMenu(Pixel *pixel, int activeButton) {
 	int height;
 	int width;
 
-	// Initatializing Variables based on state
+	// Initializing Variables based on state
 	if(activeButton == 2) {
 		pauseMenuPtr = (int *) PauseMenu1.pixel_data;
 		height = (int) PauseMenu1.height;
@@ -169,7 +219,6 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr, Pi
  * 				A pointer to the pixel.	
  */
 void drawPixel(Pixel *pixel) {
-	long int location = (pixel->x +framebufferstruct.xOff) * (framebufferstruct.bits/8) 
-						+ (pixel->y+framebufferstruct.yOff) * framebufferstruct.lineLength;
+	long int location = (pixel->x +framebufferstruct.xOff) * (framebufferstruct.bits/8) + (pixel->y+framebufferstruct.yOff) * framebufferstruct.lineLength;
 	*((unsigned short int*)(framebufferstruct.fptr + location)) = pixel->color;
 }

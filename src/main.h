@@ -13,7 +13,7 @@ typedef struct {
 	int x, y;
 } Pixel;
 
-/* Dimentions */
+/* Dimensions */
 #define WIDTH   1280
 #define HEIGHT  760
 #define STARTX  0
@@ -40,5 +40,6 @@ void drawStartScreen(Pixel *pixel, int type);
 void drawPauseMenu(Pixel *pixel, int activeButton);
 void drawImage(int starty, int startx, int height, int width, short int *ptr, Pixel *pixel);
 void drawPixel(Pixel *pixel);
+void refreshBoard(Pixel *pixel, shared state);
 
 #endif
