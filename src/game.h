@@ -3,7 +3,7 @@
 
 /* Definitions */
 
-/* Amount of cells in game map, each cell is 35x35 pixels large. */ 
+/* Amount of cells in game map, each cell is 40x40 pixels large. */ 
 #define CELLSX      32
 #define CELLSY      18
 
@@ -23,7 +23,7 @@
 #define SPACE       "SPACE"
 // Challenge 2
 #define LOG         "LOG"
-#define LILYPAD     "LILYPAD"
+#define TURTLE      "TURTLE"
 #define WATER       "WATER"
 // Challenge 1
 #define CAR1        "CAR1"

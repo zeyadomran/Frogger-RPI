@@ -74,7 +74,7 @@ void loadGameMap(shared state) {
                 break;
             case 12:
                 int randNum = getRandomNum(0, 1);
-                if(randNum == 1) updateCell(state, LILYPAD, i, j, 1);
+                if(randNum == 1) updateCell(state, TURTLE, i, j, 1);
                 else updateCell(state, WATER, i, j, 1);
                 break;
             case 13:
@@ -83,17 +83,17 @@ void loadGameMap(shared state) {
             // Challenge 1
             case 14:
                 int randNum = getRandomNum(0, 1);
-                if(randNum == 1) updateCell(state, CAR1, i, j, 2);
+                if(randNum == 1) updateCell(state, CAR2, i, j, 2);
                 else updateCell(state, ROAD, i, j, 2);
                 break;
             case 15:
                 int randNum = getRandomNum(0, 1);
-                if(randNum == 1) updateCell(state, CAR2, i, j, -1);
+                if(randNum == 1) updateCell(state, CAR1, i, j, -1);
                 else updateCell(state, ROAD, i, j, -1);
                 break;
             case 16:
                 int randNum = getRandomNum(0, 1);
-                if(randNum == 1) updateCell(state, CAR1, i, j, 1);
+                if(randNum == 1) updateCell(state, CAR2, i, j, 1);
                 else updateCell(state, ROAD, i, j, 1);
                 break;
             // Player Starting pos & border & info
