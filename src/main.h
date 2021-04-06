@@ -39,10 +39,10 @@ typedef struct {
 /* Prototypes */
 
 int main(void);
-void drawStartScreen(Pixel *pixel, int type);
-void drawPauseMenu(Pixel *pixel, int activeButton);
-void drawImage(int starty, int startx, int height, int width, short int *ptr, Pixel *pixel);
+void refreshBoard(shared state);
+void drawStartScreen(int type);
+void drawPauseMenu(int activeButton);
+void drawImage(int starty, int startx, int height, int width, short int *ptr);
 void drawPixel(Pixel *pixel);
-void refreshBoard(Pixel *pixel, shared state);
 
 #endif

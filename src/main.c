@@ -19,18 +19,15 @@ int main(void) {
 	/* initialize + get FBS */
 	framebufferstruct = initFbInfo();
 
-	/* initialize a pixel */
-	Pixel *pixel;
-	pixel = malloc(sizeof(Pixel));
-
 	/* Initialization */
 	initState(&state);
 
 	int activeButton = 1;
 	/* Draws the start Screen */
 	clearConsole();
-	drawStartScreen(pixel, activeButton);
+	drawStartScreen(activeButton);
 	srand(time(0));
+	
 	/* Program loop */
 	while(true) {
 		int button = getButtonPressed(); // Gets button pressed by SNES controller.
@@ -38,16 +35,16 @@ int main(void) {
 			if((button == JD) && (activeButton == 1)) {
 				activeButton = 2;
 				clearConsole();
-				drawStartScreen(pixel, activeButton);
+				drawStartScreen(activeButton);
 			} else if((button == JU) && (activeButton == 2)) {
 				activeButton = 1;
 				clearConsole();
-				drawStartScreen(pixel, activeButton);
+				drawStartScreen(activeButton);
 			} else if((button == A) && (activeButton == 1)) { // Starts game.
 				state.showStartMenu = false;
 				activeButton = 1;
 				clearConsole();
-				refreshBoard(pixel, state);
+				refreshBoard(state);
 			} else if((button == A) && (activeButton == 2)) { // Exits game.
 				clearConsole();
 				exit(0);
@@ -57,48 +54,49 @@ int main(void) {
 				if((button == JD) && (activeButton == 1)) {
 					activeButton = 2;
 					clearConsole();
-					drawPauseMenu(pixel, activeButton);
+					drawPauseMenu(activeButton);
 				} else if((button == JU) && (activeButton == 2)) {
 					activeButton = 1;
 					clearConsole();
-					drawPauseMenu(pixel, activeButton);
+					drawPauseMenu(activeButton);
 				} else if((button == A) && (activeButton == 1)) { // Resumes game.
 					state.showGameMenu = false;
 					activeButton = 1;
 					clearConsole();
-					refreshBoard(pixel, state);
+					refreshBoard(state);
 				} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
 					state.showGameMenu = false;
 					state.showStartMenu = true;
-					drawStartScreen(pixel, 1);
+					drawStartScreen(1);
 				}
 			} else {
 				if(button == STR) { // Pauses the game.
 					state.showGameMenu = true;
 					clearConsole();
-					drawPauseMenu(pixel, 1);
+					drawPauseMenu(1);
 				}
 			}
 		}
 		/* Delays the input to make sure that the SNES controller is not spamming. */
 		delay(125);
 	}
-
-	/* free pixel's allocated memory */
-	free(pixel);
-	pixel = NULL;
 	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 	return 0;
 }
 
-void refreshBoard(Pixel *pixel, shared state) {
+/**
+ * Refreshes the game board.
+ * 
+ * @param state
+ * 				The game's current state.
+*/
+void refreshBoard(shared state) {
 	for(int i = 0; i < CELLSY; i++) {
 		for(int j = 0; j < CELLSX; j++) {
-			char cellType;
+			char cellType = state.gameMap.type[i][j];
 			short int *imagePtr;
 			int height;
 			int width;
-			cellType = state.gameMap.type[i][j];
 			if(cellType == CASTLE) {
 				imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
 				height = (int) GRNBORDERIMAGE.height;
@@ -179,19 +177,18 @@ void refreshBoard(Pixel *pixel, shared state) {
 			int starty = (STARTY + (i * 40));
 			int startx = (STARTX + (j * 40));
 			// Draw the loaded image.
-			drawImage(starty, startx, height, width, imagePtr, pixel);
+			drawImage(starty, startx, height, width, imagePtr);
 		}
 	}
 }
 
 /**
  *  Draws the Start Menu.
- *  @param pixel 
- * 				A pointer to a pixel.
+ * 
  * 	@param activeButton 
  * 				Which button is active in the start Menu.
  */
-void drawStartScreen(Pixel *pixel, int activeButton) {
+void drawStartScreen(int activeButton) {
 	// Declaring Variables
 	short int *startScreenPtr;
 	int height;
@@ -209,17 +206,16 @@ void drawStartScreen(Pixel *pixel, int activeButton) {
 	}
 
 	// Draw Image
-	drawImage(STARTY, STARTX, height, width, startScreenPtr, pixel);
+	drawImage(STARTY, STARTX, height, width, startScreenPtr);
 }
 
 /**
  *  Draws the Pause Menu.
- *  @param pixel 
- * 				A pointer to a pixel.
+ * 
  * 	@param activeButton 
  * 				Which button is active in the Pause Menu.
  */
-void drawPauseMenu(Pixel *pixel, int activeButton) {
+void drawPauseMenu(int activeButton) {
 	// Declaring Variables
 	short int *pauseMenuPtr;
 	int height;
@@ -239,7 +235,7 @@ void drawPauseMenu(Pixel *pixel, int activeButton) {
 	int starty = (STARTY + 120);
 	int startx = (STARTX + 400);
 	// Draw Image
-	drawImage(starty, startx, height, width, pauseMenuPtr, pixel);
+	drawImage(starty, startx, height, width, pauseMenuPtr);
 }
 
 
@@ -256,10 +252,13 @@ void drawPauseMenu(Pixel *pixel, int activeButton) {
  * 				The width of the image.
  * @param ptr
  * 				A pointer to the image.
- * @param pixel
- * 				A pointer to the pixel.	
  */
-void drawImage(int starty, int startx, int height, int width, short int *ptr, Pixel *pixel) {
+void drawImage(int starty, int startx, int height, int width, short int *ptr) {
+	/* initialize a pixel */
+	Pixel *pixel;
+	pixel = malloc(sizeof(Pixel));
+
+	/* Printing the image. */
 	int i = 0;
 	for (int y = starty; y < height; y++) {
 		for (int x = startx; x < width; x++) {	
@@ -270,10 +269,15 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr, Pi
 			i++;
 		}
 	}
+
+	/* free pixel's allocated memory */
+	free(pixel);
+	pixel = NULL;
 }
 
 /**
  *  Draws a pixel.
+ * 
  *  @param pixel 
  * 				A pointer to the pixel.	
  */
