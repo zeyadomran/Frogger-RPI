@@ -8,16 +8,11 @@
 #include <time.h>
 #include "main.h"
 
-/* The frame buffer struct. */
-struct fbs framebufferstruct;
 /* The game's state. */
 shared state;
 
 /* main function */
 int main(void) {
-
-	/* initialize + get FBS */
-	framebufferstruct = initFbInfo();
 
 	/* Initialization */
 	initState(&state);
@@ -27,11 +22,11 @@ int main(void) {
 	clearConsole();
 	drawStartScreen(activeButton);
 	srand(time(0));
-	
+
 	/* Program loop */
 	while(true) {
 		int button = getButtonPressed(); // Gets button pressed by SNES controller.
-		if(state.showStartMenu) { // Checks if we are in the start menu.
+		if(state.showStartMenu) { // Checks ifwe are in the start menu.
 			if((button == JD) && (activeButton == 1)) {
 				activeButton = 2;
 				clearConsole();
@@ -80,7 +75,6 @@ int main(void) {
 		/* Delays the input to make sure that the SNES controller is not spamming. */
 		delay(125);
 	}
-	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 	return 0;
 }
 
@@ -129,7 +123,7 @@ void refreshBoard(shared state) {
 				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
 				height = (int) BLKBORDERIMAGE.height;
 				width = (int) BLKBORDERIMAGE.width;
-			}else if(cellType == SPACESHIP1) {
+			} else if(cellType == SPACESHIP1) {
 				imagePtr = (short int *) SPACESHIP1IMAGE.pixel_data;
 				height = (int) SPACESHIP1IMAGE.height;
 				width = (int) SPACESHIP1IMAGE.width;
@@ -193,7 +187,7 @@ void drawStartScreen(int activeButton) {
 	short int *startScreenPtr;
 	int height;
 	int width;
-	
+
 	// Initializing Variables based on state
 	if(activeButton == 1) {
 		startScreenPtr = (short int *) StartScreen1.pixel_data;
@@ -231,13 +225,12 @@ void drawPauseMenu(int activeButton) {
 		height = (int) PauseMenu2.height;
 		width = (int) PauseMenu2.width;
 	}
-	
+
 	int starty = (STARTY + 120);
 	int startx = (STARTX + 400);
 	// Draw Image
 	drawImage(starty, startx, height, width, pauseMenuPtr);
 }
-
 
 /**
  * Draws an image to the framebuffer.
@@ -254,18 +247,24 @@ void drawPauseMenu(int activeButton) {
  * 				A pointer to the image.
  */
 void drawImage(int starty, int startx, int height, int width, short int *ptr) {
+	/* The frame buffer struct. */
+	struct fbs framebufferstruct;
+
+	/* initialize + get FBS */
+	framebufferstruct = initFbInfo();
+
 	/* initialize a pixel */
 	Pixel *pixel;
 	pixel = malloc(sizeof(Pixel));
 
 	/* Printing the image. */
 	int i = 0;
-	for (int y = starty; y < height; y++) {
-		for (int x = startx; x < width; x++) {	
-			pixel->color = ptr[i]; 
+	for(int y = starty; y < height; y++) {
+		for(int x = startx; x < width; x++) {
+			pixel->color = ptr[i];
 			pixel->x = x;
 			pixel->y = y;
-			drawPixel(pixel);
+			drawPixel(&framebufferstruct, &pixel);
 			i++;
 		}
 	}
@@ -273,6 +272,7 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr) {
 	/* free pixel's allocated memory */
 	free(pixel);
 	pixel = NULL;
+	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 }
 
 /**
@@ -281,7 +281,7 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr) {
  *  @param pixel 
  * 				A pointer to the pixel.	
  */
-void drawPixel(Pixel *pixel) {
-	long int location = (pixel->x +framebufferstruct.xOff) * (framebufferstruct.bits/8) + (pixel->y+framebufferstruct.yOff) * framebufferstruct.lineLength;
-	*((unsigned short int*)(framebufferstruct.fptr + location)) = pixel->color;
+void drawPixel(struct fbs *framebufferstruct, Pixel *pixel) {
+	long int location = (pixel->x + framebufferstruct->xOff) * (framebufferstruct->bits / 8) + (pixel->y + framebufferstruct->yOff) * framebufferstruct->lineLength;
+	*((unsigned short int *)(framebufferstruct->fptr + location)) = pixel->color;
 }
