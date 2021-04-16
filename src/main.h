@@ -18,7 +18,7 @@ typedef struct {
 
 /* Dimensions */
 #define WIDTH 	1280
-#define HEIGHT 	760
+#define HEIGHT 	720
 #define STARTX 	0
 #define STARTY 	0
 
@@ -43,6 +43,6 @@ void refreshBoard(shared state);
 void drawStartScreen(int type);
 void drawPauseMenu(int activeButton);
 void drawImage(int starty, int startx, int height, int width, short int *ptr);
-void drawPixel(struct fbs *framebufferstruct, Pixel *pixel);
+void drawPixel(Pixel *pixel);
 
 #endif

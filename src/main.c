@@ -8,11 +8,17 @@
 #include <time.h>
 #include "main.h"
 
+/* The frame buffer struct. */
+struct fbs framebufferstruct;
+
 /* The game's state. */
 shared state;
 
 /* main function */
 int main(void) {
+
+	/* initialize + get FBS */
+	framebufferstruct = initFbInfo();
 
 	/* Initialization */
 	initState(&state);
@@ -26,7 +32,7 @@ int main(void) {
 	/* Program loop */
 	while(true) {
 		int button = getButtonPressed(); // Gets button pressed by SNES controller.
-		if(state.showStartMenu) { // Checks ifwe are in the start menu.
+		if(state.showStartMenu) { // Checks if we are in the start menu.
 			if((button == JD) && (activeButton == 1)) {
 				activeButton = 2;
 				clearConsole();
@@ -75,6 +81,7 @@ int main(void) {
 		/* Delays the input to make sure that the SNES controller is not spamming. */
 		delay(125);
 	}
+	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 	return 0;
 }
 
@@ -247,32 +254,25 @@ void drawPauseMenu(int activeButton) {
  * 				A pointer to the image.
  */
 void drawImage(int starty, int startx, int height, int width, short int *ptr) {
-	/* The frame buffer struct. */
-	struct fbs framebufferstruct;
-
-	/* initialize + get FBS */
-	framebufferstruct = initFbInfo();
-
 	/* initialize a pixel */
-	Pixel *pixel;
-	pixel = malloc(sizeof(Pixel));
+	Pixel pixel;
+	// pixel = malloc(sizeof(Pixel));
 
 	/* Printing the image. */
 	int i = 0;
-	for(int y = starty; y < height; y++) {
-		for(int x = startx; x < width; x++) {
-			pixel->color = ptr[i];
-			pixel->x = x;
-			pixel->y = y;
-			drawPixel(&framebufferstruct, &pixel);
+	for(int y = 0; y < height; y++) {
+		for(int x = 0; x < width; x++) {
+			pixel.color = ptr[i];
+			pixel.x = startx + x;
+			pixel.y = starty + y;
+			drawPixel(&pixel);
 			i++;
 		}
 	}
 
 	/* free pixel's allocated memory */
-	free(pixel);
-	pixel = NULL;
-	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
+	// free(pixel);
+	// pixel = NULL;
 }
 
 /**
@@ -281,7 +281,7 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr) {
  *  @param pixel 
  * 				A pointer to the pixel.	
  */
-void drawPixel(struct fbs *framebufferstruct, Pixel *pixel) {
-	long int location = (pixel->x + framebufferstruct->xOff) * (framebufferstruct->bits / 8) + (pixel->y + framebufferstruct->yOff) * framebufferstruct->lineLength;
-	*((unsigned short int *)(framebufferstruct->fptr + location)) = pixel->color;
+void drawPixel(Pixel *pixel) {
+	long int location = (pixel->x + framebufferstruct.xOff) * (framebufferstruct.bits / 8) + (pixel->y + framebufferstruct.yOff) * framebufferstruct.lineLength;
+	*((unsigned short int *)(framebufferstruct.fptr + location)) = pixel->color;
 }
