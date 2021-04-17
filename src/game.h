@@ -32,17 +32,38 @@
 #define PLAYER      'P'
 #define INFO        'U'
 
+
+/* SNES Controller Buttons */
+#define B 	1
+#define Y 	2
+#define SEL 3
+#define STR 4
+#define JU 	5
+#define JD 	6
+#define JL 	7
+#define JR 	8
+#define A 	9
+#define X 	10
+#define LFT 11
+#define RGH 12
+
 /* A struct of the game's objects. */
 typedef struct {
-    char type[CELLSY][CELLSX];
-    int posX[CELLSY][CELLSX];
-    int posY[CELLSY][CELLSX];
-    int velocity[CELLSY][CELLSX];
+    Object objects[CELLSY][CELLSX];
+} GameMap;
+
+typedef struct {
+    char type;
+    int posX;
+    int posY;
+    int velocity;
 } Object;
 
 /* The game's shared struct. */
 typedef struct {
-    Object gameMap;
+    GameMap gameMap;
+    Object objs[CELLSX * CELLSY];
+    Object player;
     bool showStartMenu;
     bool showGameMenu;
     int score;
@@ -59,7 +80,9 @@ typedef struct {
 
 void loadGameMap(shared * state);
 void updateCell(shared * state, char type, int x, int y, int velocity);
+void updatePlayer(shared * state, char type, int y, int x, int velocity);
 void initState(shared * state);
 int getRandomNum(int lowerLimit, int upperLimit);
+void movePlayer(shared * state, int direction);
 
 #endif

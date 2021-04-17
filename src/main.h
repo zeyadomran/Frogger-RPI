@@ -22,20 +22,6 @@ typedef struct {
 #define STARTX 	0
 #define STARTY 	0
 
-/* SNES Controller Buttons */
-#define B 	1
-#define Y 	2
-#define SEL 3
-#define STR 4
-#define JU 	5
-#define JD 	6
-#define JL 	7
-#define JR 	8
-#define A 	9
-#define X 	10
-#define LFT 11
-#define RGH 12
-
 /* Prototypes */
 
 int main(void);
@@ -44,5 +30,7 @@ void drawStartScreen(int type);
 void drawPauseMenu(int activeButton);
 void drawImage(int starty, int startx, int height, int width, short int *ptr);
 void drawPixel(Pixel *pixel);
+void * objectThread(void* oID);
+void * playerThread(void* piD);
 
 #endif
