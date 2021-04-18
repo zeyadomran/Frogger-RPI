@@ -16,42 +16,90 @@ struct fbs framebufferstruct;
 /* The game's state. */
 shared state;
 
-/* Objects thread. */
-pthread_t objects[CELLSY * CELLSX];
-int objectIds[CELLSY * CELLSX];
-
-/* Player Thread. */
-pthread_t pThr; 
+/* Active button for menu */
+int activeButton = 1;
 
 /* main function */
 int main(void) {
 
 	/* initialize + get FBS */
 	framebufferstruct = initFbInfo();
+
 	/* Initialization */
 	initState(&state);
-	
-	/* Initializing Threads */
-	// draw Thread.
-	pthread_t mainThr; 
-	pthread_create(&mainThr, NULL, mainThread, NULL);
 
-	while(!state.loseFlag && !state.winFlag) {}
+	/* Objects thread. */
+	pthread_t objectThr;
+	pthread_create(&objectThr, NULL, objectThread, NULL);
+
+	/* Player Thread. */
+	pthread_t pThr; 
+	pthread_create(&pThr, NULL, playerThread, NULL);
+
+	/* draw Thread. */
+	pthread_t dThr; 
+	pthread_create(&dThr, NULL, drawThread, NULL);
+
+	srand(time(0));
+
 	/* Program loop */
+	while(true) {
+		int button = getButtonPressed(); // Gets button pressed by SNES controller.
+		if(state.showStartMenu) { // Checks if we are in the start menu.
+			if((button == JD) && (activeButton == 1)) {
+				activeButton = 2;
+			} else if((button == JU) && (activeButton == 2)) {
+				activeButton = 1;
+			} else if((button == A) && (activeButton == 1)) { // Starts game.
+				state.showStartMenu = false;
+				activeButton = 1;
+			} else if((button == A) && (activeButton == 2)) { // Exits game.
+				exit(0);
+			}
+		} else if(state.winFlag || state.loseFlag) {
+			pthread_cancel(objectThr);
+			pthread_cancel(pThr);
+			pthread_cancel(dThr);
+			if(button != -1) {
+				exit(0);
+			}
+		} else {
+			if(state.showGameMenu) { // Checks if the game is paused.
+				if((button == JD) && (activeButton == 1)) {
+					activeButton = 2;
+				} else if((button == JU) && (activeButton == 2)) {
+					activeButton = 1;
+				} else if((button == A) && (activeButton == 1)) { // Resumes game.
+					state.showGameMenu = false;
+					activeButton = 1;
+				} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
+					state.showGameMenu = false;
+					state.showStartMenu = true;
+				}
+			} else {
+				if(button == STR) { // Pauses the game.
+					state.showGameMenu = true;
+				} else {
+					if((button == JU) || (button == JD) || (button == JR) || (button == JL)) {
+						movePlayer(&state, button);
+					}
+				}
+			}
+		}
+	}
+
 	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 	return 0;
 }
 
 /**
  * Refreshes the game board.
- * 
- * @param state
- * 				The game's current state.
 */
-void refreshBoard(shared state) {
+void refreshBoard() {
+	int counter = 0;
 	for(int i = 0; i < CELLSY; i++) {
 		for(int j = 0; j < CELLSX; j++) {
-			char cellType = state.gameMap.objects[i][j].type;
+			char cellType = state.objs[counter].type;
 			short int *imagePtr;
 			int height;
 			int width;
@@ -140,17 +188,15 @@ void refreshBoard(shared state) {
 			int startx = (STARTX + (j * 40));
 			// Draw the loaded image.
 			drawImage(starty, startx, height, width, imagePtr);
+			counter += 1;
 		}
 	}
 }
 
 /**
  *  Draws the Start Menu.
- * 
- * 	@param activeButton 
- * 				Which button is active in the start Menu.
  */
-void drawStartScreen(int activeButton) {
+void drawStartScreen() {
 	// Declaring Variables
 	short int *startScreenPtr;
 	int height;
@@ -173,11 +219,8 @@ void drawStartScreen(int activeButton) {
 
 /**
  *  Draws the Pause Menu.
- * 
- * 	@param activeButton 
- * 				Which button is active in the Pause Menu.
  */
-void drawPauseMenu(int activeButton) {
+void drawPauseMenu() {
 	// Declaring Variables
 	short int *pauseMenuPtr;
 	int height;
@@ -265,39 +308,41 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr) {
  */
 void stagePixel(Pixel *pixel) {
 	long int location = (pixel->x + framebufferstruct.xOff) * (framebufferstruct.bits / 8) + (pixel->y + framebufferstruct.yOff) * framebufferstruct.lineLength;
-	*((unsigned short int *)(framebufferstruct.fptr + location)) = pixel->color;
+	*((unsigned short int *)(state.stage + location)) = pixel->color;
 }
 
 /**
  *  Draws to the framebuffer.
  */
 void drawFB() {
-	//memcpy(&framebufferstruct.fptr, &state.stage, 1920 * 1080 * 2);
+	memcpy(&framebufferstruct.fptr, &state.stage, 1920 * 1080 * 2);
 }
 
 // Thread stuff
 
 /**
  * The function that will handle all object threads.
- * 
- * @param oId
- * 			The Objects ID.
  */
-void * objectThread(void* oId) {
-    int objectID = *(int*) oId;
+void * objectThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
 		delay(156);
-		int x = state.objs[objectID].posX;
-		int v = state.objs[objectID].velocity;
-		if((x + v) < CELLSX && (x + v) >= 0) {
-			x = x + v;
-		} else {
-			if((x + v) == CELLSX) x = 0;
-			else x = CELLSX - 1;
+		int counter = 0;
+		for (int i = 0; i < CELLSY; i++) {
+			for (int j = 0; j < CELLSX; j++) {
+				int x = state.objs[counter].posX;
+				int v = state.objs[counter].velocity;
+				if((x + v) < CELLSX && (x + v) >= 0) {
+					x = x + v;
+				} else {
+					if((x + v) == CELLSX) x = 0;
+					else x = CELLSX - 1;
+				}
+				state.objs[counter].posX = x;
+				updateCell(&state, state.objs[counter].type, state.objs[counter].posY, state.objs[counter].posX, state.objs[counter].velocity, counter);
+				counter += 1;
+			}
 		}
-		state.objs[objectID].posX = x;
-		updateCell(&state, state.objs[objectID].type, state.objs[objectID].posY, state.objs[objectID].posX, state.objs[objectID].velocity, objectID);
 		if(state.loseFlag || state.winFlag) {
 			pthread_exit(NULL);
 			break;
@@ -329,80 +374,24 @@ void * playerThread() {
 }
 
 /**
- * The function that will handle the main thread.
+ * The function the will handle the draw thread. 
  */
-void * mainThread() {
-	for(int i = 0; i < (CELLSY * CELLSX); i++) {
-        objectIds[i] = i;
-        pthread_create(&objects[i], NULL, objectThread, &objectIds[i]);
-    }
-	pthread_create(&pThr, NULL, playerThread, NULL);
 
-	int activeButton = 1;
-	/* Draws the start Screen */
-	drawStartScreen(activeButton);
-	drawFB();
-	srand(time(0));
-
+void * drawThread() {
 	while(true) {
-		int button = getButtonPressed(); // Gets button pressed by SNES controller.
+		delay(33);
 		if(state.showStartMenu) { // Checks if we are in the start menu.
-			if((button == JD) && (activeButton == 1)) {
-				activeButton = 2;
-				drawStartScreen(activeButton);
-				drawFB();
-			} else if((button == JU) && (activeButton == 2)) {
-				activeButton = 1;
-				drawStartScreen(activeButton);
-				drawFB();
-			} else if((button == A) && (activeButton == 1)) { // Starts game.
-				state.showStartMenu = false;
-				activeButton = 1;
-				refreshBoard(state);
-				drawFB();
-			} else if((button == A) && (activeButton == 2)) { // Exits game.
-				exit(0);
-			}
+			drawStartScreen();
+			drawFB();
 		} else if(state.winFlag || state.loseFlag) {
-			for(int i = 0; i < (CELLSX * CELLSY); i++) pthread_join(objects[i], NULL);
-			pthread_cancel(pThr);
 			drawWinLoseBanner();
 			drawFB();
-			if(button != -1) {
-				exit(0);
-			}
+		} else if(state.showGameMenu) {
+			drawPauseMenu();
+			drawFB();
 		} else {
-			if(state.showGameMenu) { // Checks if the game is paused.
-				if((button == JD) && (activeButton == 1)) {
-					activeButton = 2;
-					drawPauseMenu(activeButton);
-					drawFB();
-				} else if((button == JU) && (activeButton == 2)) {
-					activeButton = 1;
-					drawPauseMenu(activeButton);
-					drawFB();
-				} else if((button == A) && (activeButton == 1)) { // Resumes game.
-					state.showGameMenu = false;
-					activeButton = 1;
-					refreshBoard(state);
-					drawFB();
-				} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
-					state.showGameMenu = false;
-					state.showStartMenu = true;
-					drawStartScreen(1);
-					drawFB();
-				}
-			} else {
-				if(button == STR) { // Pauses the game.
-					state.showGameMenu = true;
-					drawPauseMenu(1);
-				} else {
-					if(button != -1) movePlayer(&state, button);
-					refreshBoard(state);
-					drawFB();
-				}
-			}
+			refreshBoard();
+			drawFB();
 		}
 	}
 }
-

@@ -111,7 +111,7 @@ void loadGameMap(shared * state) {
                 updateCell(state, INFO, i, j, 0, counter);
                 break;
             }
-            counter++;
+            counter += 1;
         }
     }
 }
@@ -182,11 +182,7 @@ int getRandomNum(int lowerLimit, int upperLimit) { return ((rand() % ((upperLimi
  *              The State you wish to initialize. 
  */
 void initState(shared * state) {
-    // Allocating Memory
-    state = malloc(sizeof (shared));
-
-    state->stage = (char *) malloc(sizeof (1920 * 1080 * 2));
-
+    state->stage = malloc((1920 * 1080 * 2) + 1);
     // Initializing the rest
     state->showStartMenu = true;
     state->showGameMenu = false;
@@ -244,10 +240,11 @@ void movePlayer(shared * state, int direction) {
  */
 void checkCell(shared * state) {
     Object player = state->player;
+    int counter = 0;
     for(int i = 0; i < CELLSY; i++) {
         for(int j = 0; j < CELLSX ; j++) {
             if((player.posY == i) && player.posX == j) {
-                char type = state->gameMap.objects[i][j].type;
+                char type = state->objs[counter].type;
                 if((type == CAR1) ||(type == CAR2) ||(type == WATER) || (type == ZOMBIE1) || (type == ZOMBIE2) || (type == SPACESHIP1) || (type == SPACESHIP2) || (type == CASTLE)) {
                     state->loseFlag = true;
                 } else if((type == WINZONE)) {
@@ -258,6 +255,7 @@ void checkCell(shared * state) {
                     updatePlayer(state, PLAYER, player.posY, player.posX, 0);
                 }
             }
+            counter += 1;
         }
     }
 }

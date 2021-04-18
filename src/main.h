@@ -22,15 +22,15 @@ typedef struct {
 /* Prototypes */
 
 int main(void);
-void refreshBoard(shared state);
-void drawStartScreen(int type);
-void drawPauseMenu(int activeButton);
+void refreshBoard();
+void drawStartScreen();
+void drawPauseMenu();
 void drawWinLoseBanner();
 void drawImage(int starty, int startx, int height, int width, short int *ptr);
 void stagePixel(Pixel *pixel);
 void drawFB();
-void * objectThread(void* oID);
+void * objectThread();
 void * playerThread();
-void * mainThread();
+void * drawThread();
 
 #endif
