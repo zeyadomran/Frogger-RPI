@@ -20,5 +20,7 @@
 #include "ZOMBIE2.h"
 #include "SPACESHIP1.h"
 #include "SPACESHIP2.h"
+#include "WINFLAG.h"
+#include "LOSEFLAG.h"
 
 #endif 

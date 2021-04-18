@@ -17,7 +17,7 @@ void loadGameMap(shared * state) {
             switch(i) {
             case 0:
                 if((j % 2) == 0) updateCell(state, CASTLE, i, j, 0);
-                else updateCell(state, BLUBORDER, i, j, 0);
+                else updateCell(state, WINZONE, i, j, 0);
                 break;
             // Challenge 4
             case 1:
@@ -220,5 +220,30 @@ void movePlayer(shared * state, int direction) {
             }
             break;
     }
+    checkCell(state);
     updatePlayer(state, PLAYER, player->posY, player->posX, player->velocity);
+}
+
+/**
+ * Checks the cell the player is currently in.
+ * 
+ * @param state
+ *              The game's state. 
+ */
+void checkCell(shared * state) {
+    Object * player = &state->player;
+    for(int i = 0; i < (CELLSX * CELLSY); i++) {
+        if(player->posY == state->objs[i].posY) {
+            char type = state->objs[i].type;
+            if((type == CAR1) ||(type == CAR2) ||(type == WATER) || (type == ZOMBIE1) || (type == ZOMBIE2) || (type == SPACESHIP1) || (type == SPACESHIP2) || (type == CASTLE)) {
+                state->loseFlag = true;
+            } else if((type == WINZONE)) {
+                state->winFlag = true;
+            } else {
+                player->posX = state->objs[i].posX;
+                player->posY = state->objs[i].posY;
+                player->velocity = state->objs[i].velocity;
+            } 
+        }
+    }
 }

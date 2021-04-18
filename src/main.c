@@ -66,6 +66,8 @@ int main(void) {
 				clearConsole();
 				exit(0);
 			}
+		} else if(state.winFlag || state.loseFlag) {
+
 		} else {
 			if(state.showGameMenu) { // Checks if the game is paused.
 				if((button == JD) && (activeButton == 1)) {
@@ -100,7 +102,6 @@ int main(void) {
 		}
 		/* Delays the input to make sure that the SNES controller is not spamming. */
 		delay(125);
-
 	}
 	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 	return 0;
@@ -123,6 +124,11 @@ void refreshBoard(shared state) {
 				imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
 				height = (int) GRNBORDERIMAGE.height;
 				width = (int) GRNBORDERIMAGE.width;
+			}
+			if(cellType == WINZONE) {
+				imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
+				height = (int) BLUBORDERIMAGE.height;
+				width = (int) BLUBORDERIMAGE.width;
 			}
 			if(cellType == BLUBORDER) {
 				imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
@@ -279,6 +285,35 @@ void drawPauseMenu(int activeButton) {
 }
 
 /**
+ *  Draws the Win/Lose Banner.
+ * 
+ * 	@param state 
+ * 				The game's state.
+ */
+void drawWinLoseBanner(shared * state) {
+	// Declaring Variables
+	short int *flag;
+	int height;
+	int width;
+
+	// Initializing Variables based on state
+	if(state->winFlag) {
+		flag = (short int *) WinFlag.pixel_data;
+		height = (int) WinFlag.height;
+		width = (int) WinFlag.width;
+	} else {
+		flag = (short int *) LoseFlag.pixel_data;
+		height = (int) LoseFlag.height;
+		width = (int) LoseFlag.width;
+	}
+
+	int starty = (STARTY + 120);
+	int startx = (STARTX + 400);
+	// Draw Image
+	drawImage(starty, startx, height, width, flag);
+}
+
+/**
  * Draws an image to the framebuffer.
  * 
  * @param starty
@@ -368,6 +403,7 @@ void * playerThread(void* piD) {
 			else x = CELLSX - 1;
 		}
 		player->posX = x;
+		checkCell(&state);
 		updatePlayer(&state, PLAYER, player->posY, player->posX, player->velocity);
     }
 }

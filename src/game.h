@@ -9,6 +9,7 @@
 
 /* Object type definitions. */
 #define CASTLE      'C'
+#define WINZONE     'A'
 #define BLUBORDER   'B'
 #define REDBORDER   'R'
 #define GRNBORDER   'G'
@@ -84,5 +85,6 @@ void updatePlayer(shared * state, char type, int y, int x, int velocity);
 void initState(shared * state);
 int getRandomNum(int lowerLimit, int upperLimit);
 void movePlayer(shared * state, int direction);
+void checkCell(shared * state);
 
 #endif
