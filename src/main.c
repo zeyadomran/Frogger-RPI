@@ -315,7 +315,7 @@ void stagePixel(Pixel *pixel) {
  *  Draws to the framebuffer.
  */
 void drawFB() {
-	memcpy(&framebufferstruct.fptr, &state.stage, 1920 * 1080 * 2);
+	memcpy(&framebufferstruct.fptr, &state.stage, (1280 * 720 * 2));
 }
 
 // Thread stuff

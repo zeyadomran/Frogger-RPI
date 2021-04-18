@@ -182,7 +182,7 @@ int getRandomNum(int lowerLimit, int upperLimit) { return ((rand() % ((upperLimi
  *              The State you wish to initialize. 
  */
 void initState(shared * state) {
-    state->stage = malloc((1920 * 1080 * 2) + 1);
+    state->stage = malloc((1280 * 720 * 2));
     // Initializing the rest
     state->showStartMenu = true;
     state->showGameMenu = false;
