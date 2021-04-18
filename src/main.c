@@ -99,7 +99,7 @@ void refreshBoard() {
 	int counter = 0;
 	for(int i = 0; i < CELLSY; i++) {
 		for(int j = 0; j < CELLSX; j++) {
-			char cellType = state.objs[counter].type;
+			char cellType = state.gameMap[i][j];
 			short int *imagePtr;
 			int height;
 			int width;
@@ -308,14 +308,14 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr) {
  */
 void stagePixel(Pixel *pixel) {
 	long int location = (pixel->x + framebufferstruct.xOff) * (framebufferstruct.bits / 8) + (pixel->y + framebufferstruct.yOff) * framebufferstruct.lineLength;
-	*((unsigned short int *)(state.stage + location)) = pixel->color;
+	*((unsigned short int *)(framebufferstruct.fptr + location)) = pixel->color;
 }
 
 /**
  *  Draws to the framebuffer.
  */
 void drawFB() {
-	memcpy(&framebufferstruct.fptr, &state.stage, (1280 * 720 * 2));
+	//memcpy(&framebufferstruct.fptr, &state.stage, (1280 * 720 * 2));
 }
 
 // Thread stuff

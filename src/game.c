@@ -137,10 +137,7 @@ void updateCell(shared * state, char type, int y, int x, int velocity, int objsI
     state->objs[objsID].posX = x;
     state->objs[objsID].posY = y;
     state->objs[objsID].velocity = velocity;
-    state->gameMap.objects[y][x].type = type;
-    state->gameMap.objects[y][x].posX = x;
-    state->gameMap.objects[y][x].posY = y;
-    state->gameMap.objects[y][x].velocity = velocity;
+    state->gameMap[y][x] = type;
 }
 
 /**
@@ -244,13 +241,13 @@ void checkCell(shared * state) {
     for(int i = 0; i < CELLSY; i++) {
         for(int j = 0; j < CELLSX ; j++) {
             if((player.posY == i) && player.posX == j) {
-                char type = state->objs[counter].type;
+                char type = state->gameMap[i][j];
                 if((type == CAR1) ||(type == CAR2) ||(type == WATER) || (type == ZOMBIE1) || (type == ZOMBIE2) || (type == SPACESHIP1) || (type == SPACESHIP2) || (type == CASTLE)) {
                     state->loseFlag = true;
                 } else if((type == WINZONE)) {
                     state->winFlag = true;
                 } else if((type == LOG) || (type == TURTLE)) {
-                    updatePlayer(state, PLAYER, player.posY, player.posX, state->gameMap.objects[i][j].velocity);
+                    updatePlayer(state, PLAYER, player.posY, player.posX, state->objs[counter].velocity);
                 } else {
                     updatePlayer(state, PLAYER, player.posY, player.posX, 0);
                 }
