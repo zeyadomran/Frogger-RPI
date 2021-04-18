@@ -22,6 +22,9 @@ typedef struct {
 #define STARTX 	0
 #define STARTY 	0
 
+#define NANOSECONDMULTIPLIER  1000000  // 1 millisecond = 1,000,000 Nanoseconds
+
+
 /* Prototypes */
 
 int main(void);
@@ -32,6 +35,7 @@ void drawWinLoseBanner();
 void drawImage(int starty, int startx, int height, int width, short int *ptr);
 void drawPixel(Pixel *pixel);
 void * objectThread(void* oID);
-void * playerThread(void* piD);
+void * playerThread();
+void * drawThread();
 
 #endif

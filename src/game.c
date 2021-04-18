@@ -133,7 +133,10 @@ void updateCell(shared * state, char type, int y, int x, int velocity) {
     state->objs[y*x].posX = x;
     state->objs[y*x].posY = y;
     state->objs[y*x].velocity = velocity;
-    state->gameMap.objects[y][x] = state->objs[y*x];
+    state->gameMap.objects[y][x].type = type;
+    state->gameMap.objects[y][x].posX = x;
+    state->gameMap.objects[y][x].posY = y;
+    state->gameMap.objects[y][x].velocity = velocity;
 }
 
 /**
@@ -175,6 +178,13 @@ int getRandomNum(int lowerLimit, int upperLimit) { return ((rand() % ((upperLimi
  *              The State you wish to initialize. 
  */
 void initState(shared * state) {
+    // Allocating Memory
+    state = malloc(sizeof (shared));
+    state->gameMap.objects = (Object **) malloc(sizeof (Object* ) * CELLSY);
+    for(int i = 0; i < CELLSX; i++) state->gameMap.objects[i] = (Object * ) malloc(sizeof (Object) * CELLSX);
+    state->objs = (Object * ) malloc((CELLSX * CELLSY) * sizeof (Object));
+
+    // Initializing the rest
     state->showStartMenu = true;
     state->showGameMenu = false;
     state->score = 0;
@@ -221,7 +231,6 @@ void movePlayer(shared * state, int direction) {
             break;
     }
     checkCell(state);
-    updatePlayer(state, PLAYER, player->posY, player->posX, player->velocity);
 }
 
 /**
@@ -243,6 +252,7 @@ void checkCell(shared * state) {
                 player->posX = state->objs[i].posX;
                 player->posY = state->objs[i].posY;
                 player->velocity = state->objs[i].velocity;
+                updatePlayer(state, PLAYER, player->posY, player->posX, player->velocity);
             } 
         }
     }

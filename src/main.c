@@ -15,29 +15,25 @@ struct fbs framebufferstruct;
 /* The game's state. */
 shared state;
 
+/* Objects thread. */
+pthread_t objects[CELLSY * CELLSX];
+int objectIds[CELLSY * CELLSX];
+
+/* Player Thread. */
+pthread_t pThr; 
+
 /* main function */
 int main(void) {
 
 	/* initialize + get FBS */
 	framebufferstruct = initFbInfo();
-
 	/* Initialization */
 	initState(&state);
 	
 	/* Initializing Threads */
-	// Objects thread
-	pthread_t objects[CELLSY * CELLSX];
-    int objectIds[CELLSY * CELLSX];
-
-    for(int i = 0; i < (CELLSY * CELLSX); i++) {
-        objectIds[i] = i;
-        pthread_create(&objects[i], NULL, objectThread, &objectIds[i]);
-    }
-
-	// Player Thread.
-	pthread_t pThr; 
-    int pID = 1;
-	pthread_create(&pThr, NULL, playerThread, &pID);
+	// draw Thread.
+	pthread_t drawThr; 
+	pthread_create(&drawThr, NULL, drawThread, NULL);
 
 	int activeButton = 1;
 	/* Draws the start Screen */
@@ -69,9 +65,10 @@ int main(void) {
 		} else if(state.winFlag || state.loseFlag) {
 			for(int i = 0; i < (CELLSX * CELLSY); i++) pthread_join(objects[i], NULL);
 			pthread_cancel(pThr);
-			clearConsole();
+			pthread_cancel(drawThr);
 			drawWinLoseBanner();
 			if(button == A) {
+				clearConsole();
 				exit(0);
 			}
 		} else {
@@ -102,12 +99,10 @@ int main(void) {
 				} else {
 					movePlayer(&state, button);
 				}
-
-				refreshBoard(state);
 			}
 		}
 		/* Delays the input to make sure that the SNES controller is not spamming. */
-		delay(125);
+		delay(156);
 	}
 	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 	return 0;
@@ -221,7 +216,7 @@ void refreshBoard(shared state) {
 				height = (int) BLKBORDERIMAGE.height;
 				width = (int) BLKBORDERIMAGE.width;
 			}
-			if(cellType == PLAYER) {
+			if((state.player.posX == j) && (state.player.posY == i)) {
 				imagePtr = (short int *) PLAYERIMAGE.pixel_data;
 				height = (int) PLAYERIMAGE.height;
 				width = (int) PLAYERIMAGE.width;
@@ -369,9 +364,12 @@ void drawPixel(Pixel *pixel) {
 void * objectThread(void* oId) {
     int objectID = *(int*) oId;
 	Object * obj = &state.objs[objectID];
+    const long SLEEPMS = 156 * NANOSECONDMULTIPLIER;
+	struct timespec sleepValue = {0};
+	sleepValue.tv_nsec = SLEEPMS;
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		delay(16);
+		nanosleep(&sleepValue, NULL);
 		int x = obj->posX;
 		int v = obj->velocity;
 		if((x + v) < CELLSX && (x + v) >= 0) {
@@ -382,21 +380,24 @@ void * objectThread(void* oId) {
 		}
 		obj->posX = x;
 		updateCell(&state, obj->type, obj->posY, obj->posX, obj->velocity);
+		if(state.loseFlag || state.winFlag) {
+			pthread_exit(NULL);
+			break;
+		}
     }
 }
 
 /**
  * The function that will handle the player thread.
- * 
- * @param pId
- * 			The player ID.
  */
-void * playerThread(void* piD) {
-    int objectID = *(int*) piD;
+void * playerThread() {
 	Object * player = &state.player;
+	const long SLEEPMS = 156 * NANOSECONDMULTIPLIER;
+	struct timespec sleepValue = {0};
+	sleepValue.tv_nsec = SLEEPMS;
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		delay(16);
+		nanosleep(&sleepValue, NULL);
 		int x = player->posX;
 		int v = player->velocity;
 		if((x + v) < CELLSX && (x + v) >= 0) {
@@ -407,6 +408,28 @@ void * playerThread(void* piD) {
 		}
 		player->posX = x;
 		checkCell(&state);
-		updatePlayer(&state, PLAYER, player->posY, player->posX, player->velocity);
+		if(state.loseFlag || state.winFlag) {
+			pthread_exit(NULL);
+			break;
+		}
+    }
+}
+
+/**
+ * The function that will handle the drawing thread.
+ */
+void * drawThread() {
+	for(int i = 0; i < (CELLSY * CELLSX); i++) {
+        objectIds[i] = i;
+        pthread_create(&objects[i], NULL, objectThread, &objectIds[i]);
+    }
+	pthread_create(&pThr, NULL, playerThread, NULL);
+	const long SLEEPMS = 33 * NANOSECONDMULTIPLIER;
+	struct timespec sleepValue = {0};
+	sleepValue.tv_nsec = SLEEPMS;
+	while(true) {
+        while(state.showStartMenu || state.showGameMenu) {}
+		nanosleep(&sleepValue, NULL);
+		refreshBoard(state);
     }
 }

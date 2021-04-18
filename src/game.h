@@ -48,11 +48,6 @@
 #define LFT 11
 #define RGH 12
 
-/* A struct of the game's objects. */
-typedef struct {
-    Object objects[CELLSY][CELLSX];
-} GameMap;
-
 typedef struct {
     char type;
     int posX;
@@ -60,10 +55,15 @@ typedef struct {
     int velocity;
 } Object;
 
+/* A struct of the game's objects. */
+typedef struct {
+    Object ** objects;
+} GameMap;
+
 /* The game's shared struct. */
 typedef struct {
     GameMap gameMap;
-    Object objs[CELLSX * CELLSY];
+    Object * objs;
     Object player;
     bool showStartMenu;
     bool showGameMenu;
