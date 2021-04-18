@@ -28,6 +28,7 @@ int main(void);
 void refreshBoard(shared state);
 void drawStartScreen(int type);
 void drawPauseMenu(int activeButton);
+void drawWinLoseBanner();
 void drawImage(int starty, int startx, int height, int width, short int *ptr);
 void drawPixel(Pixel *pixel);
 void * objectThread(void* oID);

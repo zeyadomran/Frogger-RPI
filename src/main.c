@@ -67,7 +67,13 @@ int main(void) {
 				exit(0);
 			}
 		} else if(state.winFlag || state.loseFlag) {
-
+			for(int i = 0; i < (CELLSX * CELLSY); i++) pthread_join(objects[i], NULL);
+			pthread_cancel(pThr);
+			clearConsole();
+			drawWinLoseBanner();
+			if(button == A) {
+				exit(0);
+			}
 		} else {
 			if(state.showGameMenu) { // Checks if the game is paused.
 				if((button == JD) && (activeButton == 1)) {
@@ -286,18 +292,15 @@ void drawPauseMenu(int activeButton) {
 
 /**
  *  Draws the Win/Lose Banner.
- * 
- * 	@param state 
- * 				The game's state.
  */
-void drawWinLoseBanner(shared * state) {
+void drawWinLoseBanner() {
 	// Declaring Variables
 	short int *flag;
 	int height;
 	int width;
 
 	// Initializing Variables based on state
-	if(state->winFlag) {
+	if(state.winFlag) {
 		flag = (short int *) WinFlag.pixel_data;
 		height = (int) WinFlag.height;
 		width = (int) WinFlag.width;
