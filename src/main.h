@@ -13,17 +13,11 @@ typedef struct {
 	int x, y;
 } Pixel;
 
-/* Clears the screen. */
-#define clearConsole() printf("\e[1;1H\e[2J")
-
 /* Dimensions */
 #define WIDTH 	1280
 #define HEIGHT 	720
 #define STARTX 	0
 #define STARTY 	0
-
-#define NANOSECONDMULTIPLIER  1000000  // 1 millisecond = 1,000,000 Nanoseconds
-
 
 /* Prototypes */
 
@@ -33,9 +27,10 @@ void drawStartScreen(int type);
 void drawPauseMenu(int activeButton);
 void drawWinLoseBanner();
 void drawImage(int starty, int startx, int height, int width, short int *ptr);
-void drawPixel(Pixel *pixel);
+void stagePixel(Pixel *pixel);
+void drawFB();
 void * objectThread(void* oID);
 void * playerThread();
-void * drawThread();
+void * mainThread();
 
 #endif

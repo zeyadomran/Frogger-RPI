@@ -1,6 +1,8 @@
 #ifndef game
 #define game
 
+#include "framebuffer.h" 
+
 /* Definitions */
 
 /* Amount of cells in game map, each cell is 40x40 pixels large. */ 
@@ -57,14 +59,15 @@ typedef struct {
 
 /* A struct of the game's objects. */
 typedef struct {
-    Object ** objects;
+    Object objects[CELLSY][CELLSX];
 } GameMap;
 
 /* The game's shared struct. */
 typedef struct {
     GameMap gameMap;
-    Object * objs;
+    Object objs[CELLSY * CELLSX];
     Object player;
+    char *stage;
     bool showStartMenu;
     bool showGameMenu;
     int score;
@@ -80,7 +83,7 @@ typedef struct {
 /* Prototypes */
 
 void loadGameMap(shared * state);
-void updateCell(shared * state, char type, int x, int y, int velocity);
+void updateCell(shared * state, char type, int x, int y, int velocity, int objsID);
 void updatePlayer(shared * state, char type, int y, int x, int velocity);
 void initState(shared * state);
 int getRandomNum(int lowerLimit, int upperLimit);

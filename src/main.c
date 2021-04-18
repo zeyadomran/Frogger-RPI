@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <pthread.h>
+#include <string.h>
 #include "main.h"
 
 /* The frame buffer struct. */
@@ -32,78 +33,11 @@ int main(void) {
 	
 	/* Initializing Threads */
 	// draw Thread.
-	pthread_t drawThr; 
-	pthread_create(&drawThr, NULL, drawThread, NULL);
+	pthread_t mainThr; 
+	pthread_create(&mainThr, NULL, mainThread, NULL);
 
-	int activeButton = 1;
-	/* Draws the start Screen */
-	clearConsole();
-	drawStartScreen(activeButton);
-	srand(time(0));
-
+	while(!state.loseFlag && !state.winFlag) {}
 	/* Program loop */
-	while(true) {
-		int button = getButtonPressed(); // Gets button pressed by SNES controller.
-		if(state.showStartMenu) { // Checks if we are in the start menu.
-			if((button == JD) && (activeButton == 1)) {
-				activeButton = 2;
-				clearConsole();
-				drawStartScreen(activeButton);
-			} else if((button == JU) && (activeButton == 2)) {
-				activeButton = 1;
-				clearConsole();
-				drawStartScreen(activeButton);
-			} else if((button == A) && (activeButton == 1)) { // Starts game.
-				state.showStartMenu = false;
-				activeButton = 1;
-				clearConsole();
-				refreshBoard(state);
-			} else if((button == A) && (activeButton == 2)) { // Exits game.
-				clearConsole();
-				exit(0);
-			}
-		} else if(state.winFlag || state.loseFlag) {
-			for(int i = 0; i < (CELLSX * CELLSY); i++) pthread_join(objects[i], NULL);
-			pthread_cancel(pThr);
-			pthread_cancel(drawThr);
-			drawWinLoseBanner();
-			if(button == A) {
-				clearConsole();
-				exit(0);
-			}
-		} else {
-			if(state.showGameMenu) { // Checks if the game is paused.
-				if((button == JD) && (activeButton == 1)) {
-					activeButton = 2;
-					clearConsole();
-					drawPauseMenu(activeButton);
-				} else if((button == JU) && (activeButton == 2)) {
-					activeButton = 1;
-					clearConsole();
-					drawPauseMenu(activeButton);
-				} else if((button == A) && (activeButton == 1)) { // Resumes game.
-					state.showGameMenu = false;
-					activeButton = 1;
-					clearConsole();
-					refreshBoard(state);
-				} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
-					state.showGameMenu = false;
-					state.showStartMenu = true;
-					drawStartScreen(1);
-				}
-			} else {
-				if(button == STR) { // Pauses the game.
-					state.showGameMenu = true;
-					clearConsole();
-					drawPauseMenu(1);
-				} else {
-					movePlayer(&state, button);
-				}
-			}
-		}
-		/* Delays the input to make sure that the SNES controller is not spamming. */
-		delay(156);
-	}
 	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 	return 0;
 }
@@ -121,105 +55,86 @@ void refreshBoard(shared state) {
 			short int *imagePtr;
 			int height;
 			int width;
-			if(cellType == CASTLE) {
-				imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
-				height = (int) GRNBORDERIMAGE.height;
-				width = (int) GRNBORDERIMAGE.width;
-			}
-			if(cellType == WINZONE) {
-				imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
-				height = (int) BLUBORDERIMAGE.height;
-				width = (int) BLUBORDERIMAGE.width;
-			}
-			if(cellType == BLUBORDER) {
-				imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
-				height = (int) BLUBORDERIMAGE.height;
-				width = (int) BLUBORDERIMAGE.width;
-			}
-			if(cellType == REDBORDER) {
-				imagePtr = (short int *) REDBORDERIMAGE.pixel_data;
-				height = (int) REDBORDERIMAGE.height;
-				width = (int) REDBORDERIMAGE.width;
-			}
-			if(cellType == GRNBORDER) {
-				imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
-				height = (int) GRNBORDERIMAGE.height;
-				width = (int) GRNBORDERIMAGE.width;
-			}
-			if(cellType == BLKBORDER) {
-				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
-				height = (int) BLKBORDERIMAGE.height;
-				width = (int) BLKBORDERIMAGE.width;
-			}
-			if(cellType == ZOMBIE1) {
-				imagePtr = (short int *) ZOMBIE1IMAGE.pixel_data;
-				height = (int) ZOMBIE1IMAGE.height;
-				width = (int) ZOMBIE1IMAGE.width;
-			}
-			if(cellType == ZOMBIE2) {
-				imagePtr = (short int *) ZOMBIE2IMAGE.pixel_data;
-				height = (int) ZOMBIE2IMAGE.height;
-				width = (int) ZOMBIE2IMAGE.width;
-			}
-			if(cellType == TILE) {
-				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
-				height = (int) BLKBORDERIMAGE.height;
-				width = (int) BLKBORDERIMAGE.width;
-			}
-			if(cellType == SPACESHIP1) {
-				imagePtr = (short int *) SPACESHIP1IMAGE.pixel_data;
-				height = (int) SPACESHIP1IMAGE.height;
-				width = (int) SPACESHIP1IMAGE.width;
-			}
-			if(cellType == SPACESHIP2) {
-				imagePtr = (short int *) SPACESHIP2IMAGE.pixel_data;
-				height = (int) SPACESHIP2IMAGE.height;
-				width = (int) SPACESHIP2IMAGE.width;
-			}
-			if(cellType == SPACE) {
-				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
-				height = (int) BLKBORDERIMAGE.height;
-				width = (int) BLKBORDERIMAGE.width;
-			}
-			if(cellType == LOG) {
-				imagePtr = (short int *) LOGIMAGE.pixel_data;
-				height = (int) LOGIMAGE.height;
-				width = (int) LOGIMAGE.width;
-			}
-			if(cellType == TURTLE) {
-				imagePtr = (short int *) TURTLEIMAGE.pixel_data;
-				height = (int) TURTLEIMAGE.height;
-				width = (int) TURTLEIMAGE.width;
-			}
-			if(cellType == WATER) {
-				imagePtr = (short int *) WATERIMAGE.pixel_data;
-				height = (int) WATERIMAGE.height;
-				width = (int) WATERIMAGE.width;
-			}
-			if(cellType == CAR1) {
-				imagePtr = (short int *) CAR1IMAGE.pixel_data;
-				height = (int) CAR1IMAGE.height;
-				width = (int) CAR1IMAGE.width;
-			}
-			if(cellType == CAR2) {
-				imagePtr = (short int *) CAR2IMAGE.pixel_data;
-				height = (int) CAR2IMAGE.height;
-				width = (int) CAR2IMAGE.width;
-			}
-			if(cellType == ROAD) {
-				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
-				height = (int) BLKBORDERIMAGE.height;
-				width = (int) BLKBORDERIMAGE.width;
-			}
-			if(cellType == INFO) {
-				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
-				height = (int) BLKBORDERIMAGE.height;
-				width = (int) BLKBORDERIMAGE.width;
-			}
 			if((state.player.posX == j) && (state.player.posY == i)) {
 				imagePtr = (short int *) PLAYERIMAGE.pixel_data;
 				height = (int) PLAYERIMAGE.height;
 				width = (int) PLAYERIMAGE.width;
+			} else if(cellType == CASTLE) {
+				imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
+				height = (int) GRNBORDERIMAGE.height;
+				width = (int) GRNBORDERIMAGE.width;
+			} else if(cellType == WINZONE) {
+				imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
+				height = (int) BLUBORDERIMAGE.height;
+				width = (int) BLUBORDERIMAGE.width;
+			} else if(cellType == BLUBORDER) {
+				imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
+				height = (int) BLUBORDERIMAGE.height;
+				width = (int) BLUBORDERIMAGE.width;
+			} else if(cellType == REDBORDER) {
+				imagePtr = (short int *) REDBORDERIMAGE.pixel_data;
+				height = (int) REDBORDERIMAGE.height;
+				width = (int) REDBORDERIMAGE.width;
+			} else if(cellType == GRNBORDER) {
+				imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
+				height = (int) GRNBORDERIMAGE.height;
+				width = (int) GRNBORDERIMAGE.width;
+			} else if(cellType == BLKBORDER) {
+				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
+				height = (int) BLKBORDERIMAGE.height;
+				width = (int) BLKBORDERIMAGE.width;
+			} else if(cellType == ZOMBIE1) {
+				imagePtr = (short int *) ZOMBIE1IMAGE.pixel_data;
+				height = (int) ZOMBIE1IMAGE.height;
+				width = (int) ZOMBIE1IMAGE.width;
+			} else if(cellType == ZOMBIE2) {
+				imagePtr = (short int *) ZOMBIE2IMAGE.pixel_data;
+				height = (int) ZOMBIE2IMAGE.height;
+				width = (int) ZOMBIE2IMAGE.width;
+			} else if(cellType == TILE) {
+				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
+				height = (int) BLKBORDERIMAGE.height;
+				width = (int) BLKBORDERIMAGE.width;
+			} else if(cellType == SPACESHIP1) {
+				imagePtr = (short int *) SPACESHIP1IMAGE.pixel_data;
+				height = (int) SPACESHIP1IMAGE.height;
+				width = (int) SPACESHIP1IMAGE.width;
+			} else if(cellType == SPACESHIP2) {
+				imagePtr = (short int *) SPACESHIP2IMAGE.pixel_data;
+				height = (int) SPACESHIP2IMAGE.height;
+				width = (int) SPACESHIP2IMAGE.width;
+			} else if(cellType == SPACE) {
+				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
+				height = (int) BLKBORDERIMAGE.height;
+				width = (int) BLKBORDERIMAGE.width;
+			} else if(cellType == LOG) {
+				imagePtr = (short int *) LOGIMAGE.pixel_data;
+				height = (int) LOGIMAGE.height;
+				width = (int) LOGIMAGE.width;
+			} else if(cellType == TURTLE) {
+				imagePtr = (short int *) TURTLEIMAGE.pixel_data;
+				height = (int) TURTLEIMAGE.height;
+				width = (int) TURTLEIMAGE.width;
+			} else if(cellType == WATER) {
+				imagePtr = (short int *) WATERIMAGE.pixel_data;
+				height = (int) WATERIMAGE.height;
+				width = (int) WATERIMAGE.width;
+			} else if(cellType == CAR1) {
+				imagePtr = (short int *) CAR1IMAGE.pixel_data;
+				height = (int) CAR1IMAGE.height;
+				width = (int) CAR1IMAGE.width;
+			} else if(cellType == CAR2) {
+				imagePtr = (short int *) CAR2IMAGE.pixel_data;
+				height = (int) CAR2IMAGE.height;
+				width = (int) CAR2IMAGE.width;
+			} else if(cellType == ROAD) {
+				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
+				height = (int) BLKBORDERIMAGE.height;
+				width = (int) BLKBORDERIMAGE.width;
+			} else if(cellType == INFO) {
+				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
+				height = (int) BLKBORDERIMAGE.height;
+				width = (int) BLKBORDERIMAGE.width;
 			}
 			int starty = (STARTY + (i * 40));
 			int startx = (STARTX + (j * 40));
@@ -336,21 +251,28 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr) {
 			pixel.color = ptr[i];
 			pixel.x = startx + x;
 			pixel.y = starty + y;
-			drawPixel(&pixel);
+			stagePixel(&pixel);
 			i++;
 		}
 	}
 }
 
 /**
- *  Draws a pixel.
+ *  Stages a pixel.
  * 
  *  @param pixel 
  * 				A pointer to the pixel.	
  */
-void drawPixel(Pixel *pixel) {
+void stagePixel(Pixel *pixel) {
 	long int location = (pixel->x + framebufferstruct.xOff) * (framebufferstruct.bits / 8) + (pixel->y + framebufferstruct.yOff) * framebufferstruct.lineLength;
 	*((unsigned short int *)(framebufferstruct.fptr + location)) = pixel->color;
+}
+
+/**
+ *  Draws to the framebuffer.
+ */
+void drawFB() {
+	//memcpy(&framebufferstruct.fptr, &state.stage, 1920 * 1080 * 2);
 }
 
 // Thread stuff
@@ -363,23 +285,19 @@ void drawPixel(Pixel *pixel) {
  */
 void * objectThread(void* oId) {
     int objectID = *(int*) oId;
-	Object * obj = &state.objs[objectID];
-    const long SLEEPMS = 156 * NANOSECONDMULTIPLIER;
-	struct timespec sleepValue = {0};
-	sleepValue.tv_nsec = SLEEPMS;
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		nanosleep(&sleepValue, NULL);
-		int x = obj->posX;
-		int v = obj->velocity;
+		delay(156);
+		int x = state.objs[objectID].posX;
+		int v = state.objs[objectID].velocity;
 		if((x + v) < CELLSX && (x + v) >= 0) {
 			x = x + v;
 		} else {
 			if((x + v) == CELLSX) x = 0;
 			else x = CELLSX - 1;
 		}
-		obj->posX = x;
-		updateCell(&state, obj->type, obj->posY, obj->posX, obj->velocity);
+		state.objs[objectID].posX = x;
+		updateCell(&state, state.objs[objectID].type, state.objs[objectID].posY, state.objs[objectID].posX, state.objs[objectID].velocity, objectID);
 		if(state.loseFlag || state.winFlag) {
 			pthread_exit(NULL);
 			break;
@@ -391,45 +309,100 @@ void * objectThread(void* oId) {
  * The function that will handle the player thread.
  */
 void * playerThread() {
-	Object * player = &state.player;
-	const long SLEEPMS = 156 * NANOSECONDMULTIPLIER;
-	struct timespec sleepValue = {0};
-	sleepValue.tv_nsec = SLEEPMS;
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		nanosleep(&sleepValue, NULL);
-		int x = player->posX;
-		int v = player->velocity;
+		delay(156);
+		int x = state.player.posX;
+		int v = state.player.velocity;
 		if((x + v) < CELLSX && (x + v) >= 0) {
 			x = x + v;
 		} else {
 			if((x + v) == CELLSX) x = 0;
 			else x = CELLSX - 1;
 		}
-		player->posX = x;
+		state.player.posX = x;
 		checkCell(&state);
 		if(state.loseFlag || state.winFlag) {
-			pthread_exit(NULL);
 			break;
 		}
     }
 }
 
 /**
- * The function that will handle the drawing thread.
+ * The function that will handle the main thread.
  */
-void * drawThread() {
+void * mainThread() {
 	for(int i = 0; i < (CELLSY * CELLSX); i++) {
         objectIds[i] = i;
         pthread_create(&objects[i], NULL, objectThread, &objectIds[i]);
     }
 	pthread_create(&pThr, NULL, playerThread, NULL);
-	const long SLEEPMS = 33 * NANOSECONDMULTIPLIER;
-	struct timespec sleepValue = {0};
-	sleepValue.tv_nsec = SLEEPMS;
+
+	int activeButton = 1;
+	/* Draws the start Screen */
+	drawStartScreen(activeButton);
+	drawFB();
+	srand(time(0));
+
 	while(true) {
-        while(state.showStartMenu || state.showGameMenu) {}
-		nanosleep(&sleepValue, NULL);
-		refreshBoard(state);
-    }
+		int button = getButtonPressed(); // Gets button pressed by SNES controller.
+		if(state.showStartMenu) { // Checks if we are in the start menu.
+			if((button == JD) && (activeButton == 1)) {
+				activeButton = 2;
+				drawStartScreen(activeButton);
+				drawFB();
+			} else if((button == JU) && (activeButton == 2)) {
+				activeButton = 1;
+				drawStartScreen(activeButton);
+				drawFB();
+			} else if((button == A) && (activeButton == 1)) { // Starts game.
+				state.showStartMenu = false;
+				activeButton = 1;
+				refreshBoard(state);
+				drawFB();
+			} else if((button == A) && (activeButton == 2)) { // Exits game.
+				exit(0);
+			}
+		} else if(state.winFlag || state.loseFlag) {
+			for(int i = 0; i < (CELLSX * CELLSY); i++) pthread_join(objects[i], NULL);
+			pthread_cancel(pThr);
+			drawWinLoseBanner();
+			drawFB();
+			if(button != -1) {
+				exit(0);
+			}
+		} else {
+			if(state.showGameMenu) { // Checks if the game is paused.
+				if((button == JD) && (activeButton == 1)) {
+					activeButton = 2;
+					drawPauseMenu(activeButton);
+					drawFB();
+				} else if((button == JU) && (activeButton == 2)) {
+					activeButton = 1;
+					drawPauseMenu(activeButton);
+					drawFB();
+				} else if((button == A) && (activeButton == 1)) { // Resumes game.
+					state.showGameMenu = false;
+					activeButton = 1;
+					refreshBoard(state);
+					drawFB();
+				} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
+					state.showGameMenu = false;
+					state.showStartMenu = true;
+					drawStartScreen(1);
+					drawFB();
+				}
+			} else {
+				if(button == STR) { // Pauses the game.
+					state.showGameMenu = true;
+					drawPauseMenu(1);
+				} else {
+					if(button != -1) movePlayer(&state, button);
+					refreshBoard(state);
+					drawFB();
+				}
+			}
+		}
+	}
 }
+
