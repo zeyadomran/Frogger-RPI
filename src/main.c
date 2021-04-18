@@ -343,10 +343,6 @@ void * objectThread() {
 				counter += 1;
 			}
 		}
-		if(state.loseFlag || state.winFlag) {
-			pthread_exit(NULL);
-			break;
-		}
     }
 }
 
@@ -367,9 +363,6 @@ void * playerThread() {
 		}
 		state.player.posX = x;
 		checkCell(&state);
-		if(state.loseFlag || state.winFlag) {
-			break;
-		}
     }
 }
 
