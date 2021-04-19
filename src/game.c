@@ -22,22 +22,22 @@ void loadGameMap(shared * state) {
                 break;
             // Challenge 4
             case 1:
-                randNum = getRandomNum(0, 3);
-                if(randNum == 1) updateCell(state, ZOMBIE2, i, j, -2, counter);
-                else updateCell(state, TILE, i, j, -2, counter);
+                randNum = getRandomNum(0, 6);
+                if(randNum == 1) updateCell(state, ZOMBIE2, i, j, -1, counter);
+                else updateCell(state, TILE, i, j, -1, counter);
                 break;
             case 2:
-                randNum = getRandomNum(0, 3);
-                if(randNum == 1) updateCell(state, ZOMBIE1, i, j, 2, counter);
-                else updateCell(state, TILE, i, j, 2, counter);
+                randNum = getRandomNum(0, 6);
+                if(randNum == 1) updateCell(state, ZOMBIE1, i, j, 1, counter);
+                else updateCell(state, TILE, i, j, 1, counter);
                 break;
             case 3:
-                randNum = getRandomNum(0, 3);
+                randNum = getRandomNum(0, 6);
                 if(randNum == 1) updateCell(state, ZOMBIE2, i, j, -1, counter);
                 else updateCell(state, TILE, i, j, -1, counter);
                 break;
             case 4:
-                randNum = getRandomNum(0, 3);
+                randNum = getRandomNum(0, 6);
                 if(randNum == 1) updateCell(state, ZOMBIE1, i, j, 1, counter);
                 else updateCell(state, TILE, i, j, 1, counter);
                 break;
@@ -46,17 +46,17 @@ void loadGameMap(shared * state) {
                 break;
             // Challenge 3
             case 6:
-                randNum = getRandomNum(0, 3);
-                if(randNum == 1) updateCell(state, SPACESHIP1, i, j, 2, counter);
-                else updateCell(state, SPACE, i, j, 2, counter);
+                randNum = getRandomNum(0, 6);
+                if(randNum == 1) updateCell(state, SPACESHIP1, i, j, 1, counter);
+                else updateCell(state, SPACE, i, j, 1, counter);
                 break;
             case 7:
-                randNum = getRandomNum(0, 3);
+                randNum = getRandomNum(0, 6);
                 if(randNum == 1) updateCell(state, SPACESHIP2, i, j, -1, counter);
                 else updateCell(state, SPACE, i, j, -1, counter);
                 break;
             case 8:
-                randNum = getRandomNum(0, 3);
+                randNum = getRandomNum(0, 6);
                 if(randNum == 1) updateCell(state, SPACESHIP1, i, j, 1, counter);
                 else updateCell(state, SPACE, i, j, 1, counter);
                 break;
@@ -65,36 +65,36 @@ void loadGameMap(shared * state) {
                 break;
             // Challenge 2
             case 10:
-                randNum = getRandomNum(0, 3);
-                if(randNum == 1) updateCell(state, LOG, i, j, -2, counter);
-                else updateCell(state, WATER, i, j, -2, counter);
-                break;
-            case 11:
-                randNum = getRandomNum(0, 3);
+                randNum = getRandomNum(0, 4);
                 if(randNum == 1) updateCell(state, LOG, i, j, 1, counter);
                 else updateCell(state, WATER, i, j, 1, counter);
                 break;
+            case 11:
+                randNum = getRandomNum(0, 4);
+                if(randNum == 1) updateCell(state, LOG, i, j, -1, counter);
+                else updateCell(state, WATER, i, j, -1, counter);
+                break;
             case 12:
-                randNum = getRandomNum(0, 3);
-                if(randNum == 1) updateCell(state, TURTLE, i, j, 1, counter);
-                else updateCell(state, WATER, i, j, 1, counter);
+                randNum = getRandomNum(0, 4);
+                if(randNum == 1) updateCell(state, TURTLE, i, j, -1, counter);
+                else updateCell(state, WATER, i, j, -1, counter);
                 break;
             case 13:
                 updateCell(state, BLUBORDER, i, j, 0, counter);
                 break;
             // Challenge 1
             case 14:
-                randNum = getRandomNum(0, 3);
-                if(randNum == 1) updateCell(state, CAR2, i, j, 2, counter);
-                else updateCell(state, ROAD, i, j, 2, counter);
+                randNum = getRandomNum(0, 6);
+                if(randNum == 1) updateCell(state, CAR2, i, j, 1, counter);
+                else updateCell(state, ROAD, i, j, 1, counter);
                 break;
             case 15:
-                randNum = getRandomNum(0, 3);
+                randNum = getRandomNum(0, 6);
                 if(randNum == 1) updateCell(state, CAR1, i, j, -1, counter);
                 else updateCell(state, ROAD, i, j, -1, counter);
                 break;
             case 16:
-                randNum = getRandomNum(0, 3);
+                randNum = getRandomNum(0, 6);
                 if(randNum == 1) updateCell(state, CAR2, i, j, 1, counter);
                 else updateCell(state, ROAD, i, j, 1, counter);
                 break;
@@ -180,7 +180,8 @@ int getRandomNum(int lowerLimit, int upperLimit) { return ((rand() % ((upperLimi
  *              The State you wish to initialize. 
  */
 void initState(shared * state) {
-    state->stage = malloc((1920 * 1080 * 2));
+    // Allocating memory to stage
+    state->stage = malloc((1280 * 720 * 2) + 1);
     // Initializing the rest
     state->showStartMenu = true;
     state->showGameMenu = false;
@@ -189,8 +190,7 @@ void initState(shared * state) {
     state->movesLeft = 99;
     state->winFlag = false;
     state->loseFlag = false;
-    state->timeLeft = -1;
-    state->startTime = time(0);
+    state->timeLeft = 240;
     srand(time(0));
     loadGameMap(state);
 }
@@ -204,30 +204,43 @@ void initState(shared * state) {
  *              The direction the player will move in.
  */
 void movePlayer(shared * state, int direction) {
+    int y = state->player.posY;
+    int x = state->player.posX;
+    bool playerMoved = false;
     switch(direction) {
         case JU:
-            if(state->player.posY > 0) {
-                state->player.posY += 1;
+            if(y > 0) {
+                y -= 1;
+                playerMoved = true;
             }
             break;
         case JD:
-            if(state->player.posY < 17) {
-                state->player.posY -= 1;
+            if(y < 17) {
+                y += 1;
+                playerMoved = true;
             }
             break;
         case JL:
-            if(state->player.posX > 0) {
-                state->player.posX -= 1;
+            if(x > 0) {
+                x -= 1;
+                playerMoved = true;
             }
             break;
         case JR:
-            if(state->player.posX < CELLSX) {
-                state->player.posX += 1;
+            if(x < CELLSX) {
+                x += 1;
+                playerMoved = true;
             }
             break;
     }
-    updatePlayer(state, PLAYER, state->player.posY, state->player.posX, state->player.velocity);
-    checkCell(state);
+    if(playerMoved) {
+        state->movesLeft -= 1;
+        if(state->movesLeft >= 0) {
+            state->loseFlag = true;
+        } else {
+            updatePlayer(state, PLAYER, y, x, state->player.velocity);
+        }
+    }
 }
 
 /**
@@ -238,18 +251,23 @@ void movePlayer(shared * state, int direction) {
  */
 void checkCell(shared * state) {
     int counter = 0;
+    int y = state->player.posY;
+    int x = state->player.posX;
     for(int i = 0; i < CELLSY; i++) {
         for(int j = 0; j < CELLSX ; j++) {
-            if((state->player.posY == i) && state->player.posX == j) {
-                char type = state->gameMap[i][j];
-                if((type == CAR1) ||(type == CAR2) ||(type == WATER) || (type == ZOMBIE1) || (type == ZOMBIE2) || (type == SPACESHIP1) || (type == SPACESHIP2) || (type == CASTLE)) {
-                    state->loseFlag = true;
+            if((y == i) && x == j) {
+                char type = state->objs[counter].type;
+                if((type == CAR1) || (type == CAR2) || (type == WATER) || (type == ZOMBIE1) || (type == ZOMBIE2) || (type == SPACESHIP1) || (type == SPACESHIP2) || (type == CASTLE)) {
+                    state->livesLeft -= 1;
+                    if(state->livesLeft <= 0) {
+                        state->loseFlag = true;
+                    }
                 } else if((type == WINZONE)) {
                     state->winFlag = true;
                 } else if((type == LOG) || (type == TURTLE)) {
-                    updatePlayer(state, PLAYER, state->player.posY, state->player.posX, state->objs[counter].velocity);
+                    updatePlayer(state, PLAYER, y, x, state->objs[counter].velocity);
                 } else {
-                    updatePlayer(state, PLAYER, state->player.posY, state->player.posX, 0);
+                    updatePlayer(state, PLAYER, y, x, 0);
                 }
             }
             counter += 1;

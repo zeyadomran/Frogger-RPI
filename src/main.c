@@ -6,6 +6,7 @@
 #include <sys/mman.h>
 #include <stdbool.h>
 #include <time.h>
+#include <unistd.h>
 #include <pthread.h>
 #include <string.h>
 #include "main.h"
@@ -18,6 +19,9 @@ shared state;
 
 /* Active button for menu */
 int activeButton = 1;
+
+/* Button pressed by controller */
+int button = -1;
 
 /* main function */
 int main(void) {
@@ -32,19 +36,22 @@ int main(void) {
 	pthread_t objectThr;
 	pthread_create(&objectThr, NULL, objectThread, NULL);
 
-	/* Player Thread. */
-	pthread_t pThr; 
-	pthread_create(&pThr, NULL, playerThread, NULL);
-
 	/* draw Thread. */
 	pthread_t dThr; 
 	pthread_create(&dThr, NULL, drawThread, NULL);
+
+	/* controller Thread. */
+	pthread_t cThr; 
+	pthread_create(&cThr, NULL, controllerThread, NULL);
+
+	/* time Thread. */
+	pthread_t timeThr; 
+	pthread_create(&timeThr, NULL, timeThread, NULL);
 
 	srand(time(0));
 
 	/* Program loop */
 	while(true) {
-		int button = getButtonPressed(); // Gets button pressed by SNES controller.
 		if(state.showStartMenu) { // Checks if we are in the start menu.
 			if((button == JD) && (activeButton == 1)) {
 				activeButton = 2;
@@ -54,13 +61,14 @@ int main(void) {
 				state.showStartMenu = false;
 				activeButton = 1;
 			} else if((button == A) && (activeButton == 2)) { // Exits game.
+				munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 				exit(0);
 			}
 		} else if(state.winFlag || state.loseFlag) {
 			pthread_cancel(objectThr);
-			pthread_cancel(pThr);
 			pthread_cancel(dThr);
 			if(button != -1) {
+				munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 				exit(0);
 			}
 		} else {
@@ -86,8 +94,8 @@ int main(void) {
 				}
 			}
 		}
+		sleep(0.125);
 	}
-
 	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 	return 0;
 }
@@ -308,14 +316,14 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr) {
  */
 void stagePixel(Pixel *pixel) {
 	long int location = (pixel->x + framebufferstruct.xOff) * (framebufferstruct.bits / 8) + (pixel->y + framebufferstruct.yOff) * framebufferstruct.lineLength;
-	*((unsigned short int *)(framebufferstruct.fptr + location)) = pixel->color;
+	*((unsigned short int *)(state.stage + location)) = pixel->color;
 }
 
 /**
  *  Draws to the framebuffer.
  */
 void drawFB() {
-	//memcpy(&framebufferstruct.fptr, &state.stage, (1920 * 1080 * 2));
+	memcpy(framebufferstruct.fptr, state.stage, (1280 * 720 * 2));
 }
 
 // Thread stuff
@@ -326,7 +334,7 @@ void drawFB() {
 void * objectThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		delay(500);
+		sleep(0.3);
 		int counter = 0;
 		for (int i = 0; i < CELLSY; i++) {
 			for (int j = 0; j < CELLSX; j++) {
@@ -343,16 +351,6 @@ void * objectThread() {
 				counter += 1;
 			}
 		}
-    }
-}
-
-/**
- * The function that will handle the player thread.
- */
-void * playerThread() {
-    while(true) {
-        while(state.showStartMenu || state.showGameMenu) {}
-		delay(500);
 		int x = state.player.posX;
 		int v = state.player.velocity;
 		if((x + v) < CELLSX && (x + v) >= 0) {
@@ -369,10 +367,9 @@ void * playerThread() {
 /**
  * The function the will handle the draw thread. 
  */
-
 void * drawThread() {
 	while(true) {
-		delay(33);
+		sleep(0.016);
 		if(state.showStartMenu) { // Checks if we are in the start menu.
 			drawStartScreen();
 			drawFB();
@@ -386,5 +383,31 @@ void * drawThread() {
 			refreshBoard();
 			drawFB();
 		}
+	}
+}
+
+/**
+ * The function the will handle the controller thread. 
+ */
+void * controllerThread() {
+	while(true) {
+		button = getButtonPressed();
+		sleep(0.125);
+	}
+}
+
+/**
+ * The function that will handle the time thread. 
+ */
+void * timeThread() {
+	while(true) {
+		while(state.showStartMenu || state.showGameMenu) {}
+		int timeLeft = state.timeLeft;
+		timeLeft -= 1;
+		state.timeLeft = timeLeft;
+		if(state.timeLeft <= 0) {
+			state.loseFlag = true;
+		}
+		sleep(1);
 	}
 }

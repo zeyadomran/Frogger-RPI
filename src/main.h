@@ -30,7 +30,8 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr);
 void stagePixel(Pixel *pixel);
 void drawFB();
 void * objectThread();
-void * playerThread();
+void * controllerThread();
 void * drawThread();
+void * timeThread();
 
 #endif

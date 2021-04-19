@@ -70,9 +70,7 @@ typedef struct {
     int movesLeft;
     bool winFlag;
     bool loseFlag;
-    int pausedTime;
     int timeLeft;
-    int startTime;
 } shared;
 
 /* Prototypes */
