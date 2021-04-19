@@ -103,7 +103,7 @@ void refreshBoard() {
 			short int *imagePtr;
 			int height;
 			int width;
-			if((state.player.posX == j) && (state.player.posY == i)) {
+			if(cellType == PLAYER) {
 				imagePtr = (short int *) PLAYERIMAGE.pixel_data;
 				height = (int) PLAYERIMAGE.height;
 				width = (int) PLAYERIMAGE.width;
@@ -315,7 +315,7 @@ void stagePixel(Pixel *pixel) {
  *  Draws to the framebuffer.
  */
 void drawFB() {
-	//memcpy(&framebufferstruct.fptr, &state.stage, (1280 * 720 * 2));
+	//memcpy(&framebufferstruct.fptr, &state.stage, (1920 * 1080 * 2));
 }
 
 // Thread stuff
@@ -326,7 +326,7 @@ void drawFB() {
 void * objectThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		delay(156);
+		delay(500);
 		int counter = 0;
 		for (int i = 0; i < CELLSY; i++) {
 			for (int j = 0; j < CELLSX; j++) {
@@ -335,7 +335,7 @@ void * objectThread() {
 				if((x + v) < CELLSX && (x + v) >= 0) {
 					x = x + v;
 				} else {
-					if((x + v) == CELLSX) x = 0;
+					if((x + v) >= CELLSX) x = 0;
 					else x = CELLSX - 1;
 				}
 				state.objs[counter].posX = x;
@@ -352,13 +352,13 @@ void * objectThread() {
 void * playerThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		delay(156);
+		delay(500);
 		int x = state.player.posX;
 		int v = state.player.velocity;
 		if((x + v) < CELLSX && (x + v) >= 0) {
 			x = x + v;
 		} else {
-			if((x + v) == CELLSX) x = 0;
+			if((x + v) >= CELLSX) x = 0;
 			else x = CELLSX - 1;
 		}
 		state.player.posX = x;

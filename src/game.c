@@ -101,8 +101,8 @@ void loadGameMap(shared * state) {
             // Player Starting pos & border & info
             case 17:
                 if(j == (CELLSX / 2)) {
-                    updatePlayer(state, PLAYER, i, j, 0);
                     updateCell(state, BLKBORDER, i, j, 0, counter); 
+                    updatePlayer(state, PLAYER, i, j, 0);
                 } else {
                     updateCell(state, BLKBORDER, i, j, 0, counter);
                 }
@@ -159,6 +159,7 @@ void updatePlayer(shared * state, char type, int y, int x, int velocity) {
     state->player.posX = x;
     state->player.posY = y;
     state->player.velocity = velocity;
+    state->gameMap[y][x] = type;
 }
 
 /**
@@ -179,7 +180,7 @@ int getRandomNum(int lowerLimit, int upperLimit) { return ((rand() % ((upperLimi
  *              The State you wish to initialize. 
  */
 void initState(shared * state) {
-    state->stage = malloc((1280 * 720 * 2));
+    state->stage = malloc((1920 * 1080 * 2));
     // Initializing the rest
     state->showStartMenu = true;
     state->showGameMenu = false;
@@ -203,29 +204,29 @@ void initState(shared * state) {
  *              The direction the player will move in.
  */
 void movePlayer(shared * state, int direction) {
-    Object player = state->player;
     switch(direction) {
         case JU:
-            if(player.posY != 0) {
-                player.posY += 1;
+            if(state->player.posY > 0) {
+                state->player.posY += 1;
             }
             break;
         case JD:
-            if(player.posY != 17) {
-                player.posY -= 1;
+            if(state->player.posY < 17) {
+                state->player.posY -= 1;
             }
             break;
         case JL:
-            if(player.posX != 0) {
-                player.posX -= 1;
+            if(state->player.posX > 0) {
+                state->player.posX -= 1;
             }
             break;
         case JR:
-            if(player.posX != (CELLSX - 1)) {
-                player.posX += 1;
+            if(state->player.posX < CELLSX) {
+                state->player.posX += 1;
             }
             break;
     }
+    updatePlayer(state, PLAYER, state->player.posY, state->player.posX, state->player.velocity);
     checkCell(state);
 }
 
@@ -236,20 +237,19 @@ void movePlayer(shared * state, int direction) {
  *              The game's state. 
  */
 void checkCell(shared * state) {
-    Object player = state->player;
     int counter = 0;
     for(int i = 0; i < CELLSY; i++) {
         for(int j = 0; j < CELLSX ; j++) {
-            if((player.posY == i) && player.posX == j) {
+            if((state->player.posY == i) && state->player.posX == j) {
                 char type = state->gameMap[i][j];
                 if((type == CAR1) ||(type == CAR2) ||(type == WATER) || (type == ZOMBIE1) || (type == ZOMBIE2) || (type == SPACESHIP1) || (type == SPACESHIP2) || (type == CASTLE)) {
                     state->loseFlag = true;
                 } else if((type == WINZONE)) {
                     state->winFlag = true;
                 } else if((type == LOG) || (type == TURTLE)) {
-                    updatePlayer(state, PLAYER, player.posY, player.posX, state->objs[counter].velocity);
+                    updatePlayer(state, PLAYER, state->player.posY, state->player.posX, state->objs[counter].velocity);
                 } else {
-                    updatePlayer(state, PLAYER, player.posY, player.posX, 0);
+                    updatePlayer(state, PLAYER, state->player.posY, state->player.posX, 0);
                 }
             }
             counter += 1;
