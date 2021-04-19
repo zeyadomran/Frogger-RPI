@@ -22,6 +22,6 @@ int Read_Data(unsigned int *gpioptr);
 void Read_SNES(unsigned int *gpioptr, int buttonArray[16]);
 void resetButtonArray(int buttonArray[16]);
 int buttonPressed(int buttonArray[16]);
-int getButtonPressed(void);
+int getButtonPressed(unsigned int *gpioptr);
 
 #endif

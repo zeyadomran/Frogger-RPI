@@ -23,6 +23,9 @@ int activeButton = 1;
 /* Button pressed by controller */
 int button = -1;
 
+// GPIOPointer
+unsigned int * gpioPtr; 
+
 /* main function */
 int main(void) {
 
@@ -31,6 +34,10 @@ int main(void) {
 
 	/* Initialization */
 	initState(&state);
+
+	// Initializing GPIO
+	gpioPtr = getGPIOPtr();
+	Init_GPIO(gpioPtr);
 
 	/* Objects thread. */
 	pthread_t objectThr;
@@ -391,7 +398,7 @@ void * drawThread() {
  */
 void * controllerThread() {
 	while(true) {
-		button = getButtonPressed();
+		button = getButtonPressed(gpioPtr);
 		sleep(0.125);
 	}
 }

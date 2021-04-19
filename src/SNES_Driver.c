@@ -113,9 +113,7 @@ int buttonPressed(int buttonArray[16]) {
     Gets the latest button pressed.
     @return the button pressed : -1 if no button was pressed.
 */
-int getButtonPressed(void) {
-    unsigned int *gpioPtr = getGPIOPtr();
-    Init_GPIO(gpioPtr);
+int getButtonPressed(unsigned int *gpioPtr) {
     int buttonArray[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}; 
     int button = -1;
     Read_SNES(gpioPtr, buttonArray);
