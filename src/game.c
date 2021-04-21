@@ -71,25 +71,25 @@ void loadGameMap(shared * state) {
                 break;
             // Challenge 2
             case 9:
-                if(lastLog1 <= 3) {
-                    randNum = getRandomNum(0, 2);
+                if(lastLog1 <= 4) {
+                    randNum = getRandomNum(1, 3);
                     if(randNum != lastLog1) {
                         updateCell(state, LOG, i, j, 1, counter);
                     }
                     lastLog1++;
-                } else if(lastLog1 > 3) {
+                } else if(lastLog1 > 4) {
                     updateCell(state, WATER, i, j, 1, counter);
                     lastLog1 = 0;
                 }
                 break;
             case 10:
-                if(lastLog2 <= 3) {
-                    randNum = getRandomNum(0, 2);
+                if(lastLog2 <= 4) {
+                    randNum = getRandomNum(1, 3);
                     if(randNum != lastLog2) {
                         updateCell(state, LOG, i, j, -1, counter);
                     }
                     lastLog2++;
-                } else if(lastLog2 > 3) {
+                } else if(lastLog2 > 4) {
                     updateCell(state, WATER, i, j, -1, counter);
                     lastLog2 = 0;
                 }

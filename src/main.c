@@ -275,8 +275,8 @@ char * numToString(int num) {
 void drawInfoBar() {
 	int livesStart = 20;
 	int movesStart = 300;
-	int scoreStart = 720;
-	int timeStart = 1000;
+	int scoreStart = 580;
+	int timeStart = 860;
 	int startY = (CELLSY - 1) * 40;
 
 	/* Drawing Lives Left */
