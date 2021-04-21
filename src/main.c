@@ -40,19 +40,17 @@ int main(void) {
 	pthread_t objectThr;
 	pthread_create(&objectThr, NULL, objectThread, NULL);
 
-	/* draw Thread. */
+	/* Draw Thread. */
 	pthread_t dThr; 
 	pthread_create(&dThr, NULL, drawThread, NULL);
 
-	/* controller Thread. */
+	/* Controller Thread. */
 	pthread_t cThr; 
 	pthread_create(&cThr, NULL, controllerThread, NULL);
 
-	/* time Thread. */
+	/* Time Thread. */
 	pthread_t timeThr; 
 	pthread_create(&timeThr, NULL, timeThread, NULL);
-
-	srand(time(0));
 
 	/* Program loop */
 	while(!state.gameOver) {}
@@ -62,12 +60,6 @@ int main(void) {
 	pthread_cancel(dThr);
 	pthread_cancel(timeThr);
 	pthread_cancel(cThr);
-
-	/* Printing Info for debugging */
-	printf("Moves Left: " + state.movesLeft); 
-	printf("Lives Left: " + state.livesLeft); 
-	printf("Time Left " + state.timeLeft);
-	printf("Time Playing " + state.timePlaying);
 
 	/* Freeing Frame Buffer */
 	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
@@ -80,7 +72,7 @@ int main(void) {
 */
 void refreshBoard() {
 	int counter = 0;
-	for(int i = 0; i < (CELLSY - 1); i++) {
+	for(int i = 0; i < CELLSY; i++) {
 		for(int j = 0; j < CELLSX; j++) {
 			char cellType = state.gameMap[i][j];
 			short int *imagePtr;
@@ -292,18 +284,37 @@ short int * getNumPicture(char num) {
 			return (short int *) NINE.pixel_data;
 			break;
 	}
-	return (short int *) BLKBORDERIMAGE.pixel_data;
+	return (short int *) BLKBORDERIMAGE.pixel_data; // Incase num not found.
+}
+
+/**
+ * Converts a 1-3 digit number to a formatted string with 0's padded if (num < 3 digits)
+ * 
+ * @param num
+ * 			The number you wish to convert.
+ * @return The string of the formatted number. 
+ */
+char * numToString(int num) {
+	char sNum[50];
+	if(num < 10) {
+		sprintf(sNum, "00%d", num);
+	} else if(num < 100) {
+		sprintf(sNum, "0%d", num);
+	} else {
+		sprintf(sNum, "%d", num);
+	}
+	return sNum;
 }
 
 /**
  * Draws the information bar. 
  */
 void drawInfoBar() {
-	int livesStart = 0;
-	int movesStart = 100;
-	int scoreStart = 200;
-	int timeStart = 300;
-	int startY = (CELLSY - 1);
+	int livesStart = 20;
+	int movesStart = 300;
+	int scoreStart = 720;
+	int timeStart = 1000;
+	int startY = (CELLSY - 1) * 40;
 
 	/* Drawing Lives Left */
 	drawImage(startY, livesStart, 40, 80, (short int *) LIVES.pixel_data);
@@ -311,47 +322,26 @@ void drawInfoBar() {
 
 	/* Drawing Moves Left */
 	int num = state.movesLeft;
-	char sNum[3];
-	if(num < 10) {
-		sprintf(sNum, "00%d", num);
-	} else if(num < 100) {
-		sprintf(sNum, "0%d", num);
-	} else {
-		sprintf(sNum, "%d", num);
-	}
+	char movesNum[50] = numToString(num);
 	drawImage(startY, movesStart, 40, 80, (short int *) MOVES.pixel_data);
 	for(int i = 0; i < 3; i++) {
-		drawImage(startY , ((i * 40) + 80 + movesStart), 40, 40, getNumPicture(sNum[i]));
+		drawImage(startY , ((i * 40) + 80 + movesStart), 40, 40, getNumPicture(movesNum[i]));
 	}
 
-	/* Drawing Moves Left */
-	int num = state.score;
-	char sNum[3];
-	if(num < 10) {
-		sprintf(sNum, "00%d", num);
-	} else if(num < 100) {
-		sprintf(sNum, "0%d", num);
-	} else {
-		sprintf(sNum, "%d", num);
-	}
+	/* Drawing Score */
+	num = state.score;
+	char scoreNum[50] = numToString(num);
 	drawImage(startY, scoreStart, 40, 80, (short int *) SCORE.pixel_data);
 	for(int i = 0; i < 3; i++) {
-		drawImage(startY , ((i * 40) + 80 + scoreStart), 40, 40, getNumPicture(sNum[i]));
+		drawImage(startY , ((i * 40) + 80 + scoreStart), 40, 40, getNumPicture(scoreNum[i]));
 	}
 
-	/* Drawing Moves Left */
-	int num = state.timeLeft;
-	char sNum[3];
-	if(num < 10) {
-		sprintf(sNum, "00%d", num);
-	} else if(num < 100) {
-		sprintf(sNum, "0%d", num);
-	} else {
-		sprintf(sNum, "%d", num);
-	}
-	drawImage(startY, timeStart, 40, 80, (short int *) MOVES.pixel_data);
+	/* Drawing Time Left */
+	num = state.timeLeft;
+	char timeNum[50] = numToString(num);
+	drawImage(startY, timeStart, 40, 80, (short int *) TIME.pixel_data);
 	for(int i = 0; i < 3; i++) {
-		drawImage(startY , ((i * 40) + 80 + timeStart), 40, 40, getNumPicture(sNum[i]));
+		drawImage(startY , ((i * 40) + 80 + timeStart), 40, 40, getNumPicture(timeNum[i]));
 	}
 }
 
@@ -407,16 +397,15 @@ void drawFB() {
 }
 
 // Thread stuff
-
 /**
  * The function that will handle all object threads.
  */
 void * objectThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		sleep(0.8);
+		sleep(1);
 		int counter = 0;
-		for (int i = 0; i < (CELLSY - 1); i++) {
+		for (int i = 0; i < CELLSY; i++) {
 			for (int j = 0; j < CELLSX; j++) {
 				int x = state.objs[counter].posX;
 				int v = state.objs[counter].velocity;
@@ -457,7 +446,8 @@ void * drawThread() {
 		if(state.showStartMenu) { // Checks if we are in the start menu.
 			drawStartScreen();
 		} else if(state.winFlag || state.loseFlag) {
-			state.score += (state.timeLeft + state.movesLeft + state.livesLeft) * 1.25;
+			int score = (state.timeLeft + state.movesLeft + state.livesLeft) * 1.4;
+			if(state.winFlag && (state.score < score)) state.score = score;
 			drawWinLoseBanner();
 			drawInfoBar();
 		} else if(state.showGameMenu) {
@@ -512,7 +502,6 @@ void * controllerThread() {
 				}
 			}
 		}
-		sleep(0.25);
 	}
 }
 

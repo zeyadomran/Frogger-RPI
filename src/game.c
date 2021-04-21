@@ -188,7 +188,7 @@ void initState(shared * state) {
     state->gameOver = false;
     state->score = 0;
     state->livesLeft = 4;
-    state->movesLeft = 199;
+    state->movesLeft = 100;
     state->highestLane = CELLSY - 1;
     state->winFlag = false;
     state->loseFlag = false;
@@ -257,28 +257,40 @@ void movePlayer(shared * state, int direction) {
  *              The game's state. 
  */
 void checkCell(shared * state) {
-    int counter = 0;
     int y = state->player.posY;
     int x = state->player.posX;
-    for(int i = 0; i < CELLSY; i++) {
-        for(int j = 0; j < CELLSX ; j++) {
-            if((y == i) && x == j) {
-                char type = state->objs[counter].type;
-                if((type == CAR1) || (type == CAR2) || (type == WATER) || (type == ZOMBIE1) || (type == ZOMBIE2) || (type == SPACESHIP1) || (type == SPACESHIP2) || (type == CASTLE)) {
-                    state->livesLeft -= 1;
-                    if(state->livesLeft <= 0) {
-                        state->loseFlag = true;
-                    }
-                    updatePlayer(state, PLAYER, 17, (CELLSX / 2), state->player.velocity);
-                } else if((type == WINZONE)) {
-                    state->winFlag = true;
-                } else if((type == LOG) || (type == TURTLE)) {
-                    updatePlayer(state, PLAYER, y, x, state->objs[counter].velocity);
-                } else {
-                    updatePlayer(state, PLAYER, y, x, 0);
+    for(int i = 0; i < (CELLSX * CELLSY); i++) {
+        int objY = state->objs[i].posY;
+        int objX = state->objs[i].posX;
+        if((y == objY) && x == objX) {
+            char type = state->objs[i].type;
+            if(
+                (type == CAR1) || 
+                (type == CAR2) || 
+                (type == WATER) || 
+                (type == ZOMBIE1) || 
+                (type == ZOMBIE2) || 
+                (type == SPACESHIP1) || 
+                (type == SPACESHIP2) || 
+                (type == CASTLE)
+            ) {
+                state->livesLeft -= 1;
+                if(state->livesLeft <= 0) {
+                    state->loseFlag = true;
                 }
+                updatePlayer(state, PLAYER, 17, (CELLSX / 2), 0);
+            } else if(
+                (type == WINZONE)
+            ) {
+                state->winFlag = true;
+            } else if(
+                (type == LOG) || 
+                (type == TURTLE)
+            ) {
+                updatePlayer(state, PLAYER, y, x, state->objs[i].velocity);
+            } else {
+                updatePlayer(state, PLAYER, y, x, 0);
             }
-            counter += 1;
         }
     }
 }

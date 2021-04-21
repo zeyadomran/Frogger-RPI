@@ -27,6 +27,7 @@ void drawStartScreen();
 void drawPauseMenu();
 void drawWinLoseBanner();
 short int * getNumPicture(char num);
+char * numToString(int num);
 void drawInfoBar();
 void drawImage(int starty, int startx, int height, int width, short int *ptr);
 void stagePixel(Pixel *pixel);
