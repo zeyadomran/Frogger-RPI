@@ -158,14 +158,22 @@ void refreshBoard() {
 				case GIFT5:
 					imagePtr = (short int *) LIVES.pixel_data;
 					break;
+				default:
+					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
 			}
 			/* Calculating Image Position */
-			int starty = (STARTY + ((i % 17) * 40));
-			int startx = (STARTX + ((j % 17) * 40));
+			int starty;
+			int startx= (STARTX + (j * 40));
+
+			if(state.scene == 1) {
+				starty = (STARTY + ((i - 5) * 40));
+			} else {
+				starty = (STARTY + (i * 40));
+			}
 
 			// Draw the loaded image.
 			drawImage(starty, startx, 40, 40, imagePtr);
-			counter += 1;
+			counter++;
 		}
 	}
 }
@@ -239,36 +247,27 @@ short int * getNumPicture(char num) {
 	switch(num) {
 		case '0':
 			return (short int *) ZERO.pixel_data;
-			break;
 		case '1':
 			return (short int *) ONE.pixel_data;
-			break;
 		case '2':
 			return (short int *) TWO.pixel_data;
-			break;
 		case '3':
 			return (short int *) THREE.pixel_data;
-			break;
 		case '4':
 			return (short int *) FOUR.pixel_data;
-			break;
 		case '5':
 			return (short int *) FIVE.pixel_data;
-			break;
 		case '6':
 			return (short int *) SIX.pixel_data;
-			break;
 		case '7':
 			return (short int *) SEVEN.pixel_data;
-			break;
 		case '8':
 			return (short int *) EIGHT.pixel_data;
-			break;
 		case '9':
 			return (short int *) NINE.pixel_data;
-			break;
+		default:
+			return (short int *) BLKBORDERIMAGE.pixel_data; // Incase num not found.
 	}
-	return (short int *) BLKBORDERIMAGE.pixel_data; // Incase num not found.
 }
 
 /**
@@ -392,19 +391,30 @@ void * objectThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
 		sleep(1);
-		for (int i = 0; i < (CELLSY * CELLSX); i++) {
-			int x = state.objs[i].posX;
-			int v = state.objs[i].velocity;
-			if (v != 0) {
-				if((x + v) < CELLSX && (x + v) >= 0) {
-					x = x + v;
-				} else {
-					if((x + v) >= CELLSX) x = 0;
-					else x = CELLSX - 1;
+		int startYLoop;
+		int endYLoop;
+		if(state.scene == 1) {
+			startYLoop = 5;
+			endYLoop = CELLSY;
+		} else {
+			startYLoop = 0;
+			endYLoop = 16;
+		}
+		int counter = 0;
+		for (int i = startYLoop; i < endYLoop; i++) {
+			for(int j = 0; j < CELLSX; j++) {
+				int x = state.objs[counter].posX;
+				int v = state.objs[counter].velocity;
+				if (v != 0) {
+					if((x + v) < CELLSX && (x + v) >= 0) {
+						x = x + v;
+					} else {
+						if((x + v) >= CELLSX) x = 0;
+						else x = CELLSX - 1;
+					}
 				}
-				updateCell(&state, state.objs[i].type, state.objs[i].posY, x, v, i);
-			} else {
-				updateCell(&state, state.objs[i].type, state.objs[i].posY, x, v, i);
+				updateCell(&state, state.objs[counter].type, state.objs[counter].posY, x, v, counter);
+				counter++;
 			}
 		}
 		int x = state.player.posX;
@@ -493,6 +503,7 @@ void * controllerThread() {
  * The function that will handle the time thread. 
  */
 void * timeThread() {
+	int seed = time(0) + 1;
 	while(true) {
 		while(state.showStartMenu || state.showGameMenu) {}
 		int timeLeft = state.timeLeft;
@@ -504,15 +515,16 @@ void * timeThread() {
 		if(state.timeLeft <= 0) {
 			state.loseFlag = true;
 		}
-		if((timePlaying % 30) == 0) {
-			int x = getRandomNum(0, (CELLSX - 1));
+		if(state.timePlaying == 30) {
+			state.timePlaying = 0;
+			int x = getRandomNum(0, (CELLSX - 1), &seed);
 			int y;
 			if(state.scene == 1) {
-				y = getRandomNum(1, (CELLSY - 1));
+				y = getRandomNum(1, (CELLSY - 1), &seed);
 			} else {
-				y = getRandomNum(2, 16);
+				y = getRandomNum(2, 16, &seed);
 			}
-			int type = getRandomNum(GIFT1, GIFT5);
+			int type = getRandomNum(GIFT1, GIFT5, &seed);
 			switch(type) {
 				case 1:
 					updateGift(&state, y, x, GIFT1);

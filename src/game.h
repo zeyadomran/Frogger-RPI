@@ -90,7 +90,7 @@ void updateCell(shared * state, char type, int x, int y, int velocity, int objsI
 void updatePlayer(shared * state, char type, int y, int x, int velocity);
 void updateGift(shared * state, int y, int x, char type);
 void initState(shared * state);
-int getRandomNum(int lowerLimit, int upperLimit);
+int getRandomNum(int lowerLimit, int upperLimit, int * seed);
 void movePlayer(shared * state, int direction);
 void checkGift(shared * state);
 void checkCell(shared * state);
