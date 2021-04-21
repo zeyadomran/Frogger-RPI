@@ -71,8 +71,17 @@ int main(void) {
  * Refreshes the game board.
 */
 void refreshBoard() {
+	int startYLoop;
+	int endYLoop;
+	if(state.scene == 1) {
+		startYLoop = 5;
+		endYLoop = CELLSY;
+	} else {
+		startYLoop = 0;
+		endYLoop = 16;
+	}
 	int counter = 0;
-	for(int i = 0; i < CELLSY; i++) {
+	for(int i = startYLoop; i < endYLoop; i++) {
 		for(int j = 0; j < CELLSX; j++) {
 			char cellType = state.gameMap[i][j];
 			short int *imagePtr;
@@ -134,9 +143,6 @@ void refreshBoard() {
 				case ROAD:
 					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
 					break;
-				case INFO:
-					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
-					break;
 				case GIFT1:
 					imagePtr = (short int *) GIFT1IMAGE.pixel_data;
 					break;
@@ -154,8 +160,8 @@ void refreshBoard() {
 					break;
 			}
 			/* Calculating Image Position */
-			int starty = (STARTY + (i * 40));
-			int startx = (STARTX + (j * 40));
+			int starty = (STARTY + ((i % 17) * 40));
+			int startx = (STARTX + ((j % 17) * 40));
 
 			// Draw the loaded image.
 			drawImage(starty, startx, 40, 40, imagePtr);
@@ -268,12 +274,12 @@ short int * getNumPicture(char num) {
 /**
  * Converts a 1-3 digit number to a formatted string with 0's padded if (num < 3 digits)
  * 
+ * @param sNum
+ * 			The string you wish to save the result to.
  * @param num
  * 			The number you wish to convert.
- * @return The string of the formatted number. 
  */
-char * numToString(int num) {
-	char sNum[50];
+void numToString(char sNum[50], int num) {
 	if(num < 10) {
 		sprintf(sNum, "00%d", num);
 	} else if(num < 100) {
@@ -281,7 +287,6 @@ char * numToString(int num) {
 	} else {
 		sprintf(sNum, "%d", num);
 	}
-	return sNum;
 }
 
 /**
@@ -292,7 +297,9 @@ void drawInfoBar() {
 	int movesStart = 300;
 	int scoreStart = 580;
 	int timeStart = 860;
-	int startY = (CELLSY - 1) * 40;
+	int startY = 17 * 40;
+
+	for(int i = 0; i < CELLSX; i++) drawImage(startY , (i * 40), 40, 40, (short int *) BLKBORDERIMAGE.pixel_data);
 
 	/* Drawing Lives Left */
 	drawImage(startY, livesStart, 40, 80, (short int *) LIVES.pixel_data);
@@ -300,7 +307,8 @@ void drawInfoBar() {
 
 	/* Drawing Moves Left */
 	int num = state.movesLeft;
-	char movesNum[50] = numToString(num);
+	char movesNum[50];
+	numToString(movesNum, num);
 	drawImage(startY, movesStart, 40, 80, (short int *) MOVES.pixel_data);
 	for(int i = 0; i < 3; i++) {
 		drawImage(startY , ((i * 40) + 80 + movesStart), 40, 40, getNumPicture(movesNum[i]));
@@ -308,7 +316,8 @@ void drawInfoBar() {
 
 	/* Drawing Score */
 	num = state.score;
-	char scoreNum[50] = numToString(num);
+	char scoreNum[50];
+	numToString(scoreNum, num);
 	drawImage(startY, scoreStart, 40, 80, (short int *) SCORE.pixel_data);
 	for(int i = 0; i < 3; i++) {
 		drawImage(startY , ((i * 40) + 80 + scoreStart), 40, 40, getNumPicture(scoreNum[i]));
@@ -316,7 +325,8 @@ void drawInfoBar() {
 
 	/* Drawing Time Left */
 	num = state.timeLeft;
-	char timeNum[50] = numToString(num);
+	char timeNum[50];
+	numToString(timeNum, num);
 	drawImage(startY, timeStart, 40, 80, (short int *) TIME.pixel_data);
 	for(int i = 0; i < 3; i++) {
 		drawImage(startY , ((i * 40) + 80 + timeStart), 40, 40, getNumPicture(timeNum[i]));

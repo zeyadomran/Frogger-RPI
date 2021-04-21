@@ -7,7 +7,7 @@
 
 /* Amount of cells in game map, each cell is 40x40 pixels large. */ 
 #define CELLSX      32
-#define CELLSY      18
+#define CELLSY      22
 
 /* Object type definitions. */
 #define CASTLE      'C'
@@ -33,7 +33,6 @@
 #define CAR2        'X'
 #define ROAD        'I'
 #define PLAYER      'P'
-#define INFO        'U'
 
 // Value Packs
 #define GIFT1       '1'
@@ -70,6 +69,7 @@ typedef struct {
     Object player;
     Object gift;
     char *stage;
+    int scene;
     bool showStartMenu;
     bool showGameMenu;
     bool gameOver;
