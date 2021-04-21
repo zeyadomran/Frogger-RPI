@@ -65,6 +65,7 @@ typedef struct {
     char *stage;
     bool showStartMenu;
     bool showGameMenu;
+    bool gameOver;
     int score;
     int livesLeft;
     int movesLeft;

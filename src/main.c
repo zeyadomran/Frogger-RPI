@@ -1,5 +1,5 @@
-// CPSC 359 Project Part 2.
-// Created by: Zeyad Omran (30096692) and Mohamed El Hefnawy (30093687).
+/* CPSC 359 Project Part 2. */
+/* Created by: Zeyad Omran (30096692) and Mohamed El Hefnawy (30093687). */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,10 +20,7 @@ shared state;
 /* Active button for menu */
 int activeButton = 1;
 
-/* Button pressed by controller */
-int button = -1;
-
-// GPIOPointer
+/* GPIOPointer */
 unsigned int * gpioPtr; 
 
 /* main function */
@@ -58,63 +55,21 @@ int main(void) {
 	srand(time(0));
 
 	/* Program loop */
-	while(true) {
-		if(state.showStartMenu) { // Checks if we are in the start menu.
-			if((button == JD) && (activeButton == 1)) {
-				activeButton = 2;
-				button = -1;
-			} else if((button == JU) && (activeButton == 2)) {
-				activeButton = 1;
-				button = -1;
-			} else if((button == A) && (activeButton == 1)) { // Starts game.
-				state.showStartMenu = false;
-				activeButton = 1;
-				button = -1;
-			} else if((button == A) && (activeButton == 2)) { // Exits game.
-				munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
-				exit(0);
-			}
-		} else if(state.winFlag || state.loseFlag) {
-			pthread_cancel(objectThr);
-			printf("Moves Left: " + state.movesLeft); 
-			printf("Lives Left: " + state.livesLeft); 
-			printf("Time Left " + state.timeLeft);
-			if(button != -1) {
-				pthread_cancel(dThr);
-				munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
-				exit(0);
-			}
-		} else {
-			if(state.showGameMenu) { // Checks if the game is paused.
-				if((button == JD) && (activeButton == 1)) {
-					activeButton = 2;
-					button = -1;
-				} else if((button == JU) && (activeButton == 2)) {
-					activeButton = 1;
-					button = -1;
-				} else if((button == A) && (activeButton == 1)) { // Resumes game.
-					state.showGameMenu = false;
-					activeButton = 1;
-					button = -1;
-				} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
-					state.showGameMenu = false;
-					state.showStartMenu = true;
-					button = -1;
-				}
-			} else {
-				if(button == STR) { // Pauses the game.
-					state.showGameMenu = true;
-					button = -1;
-				} else {
-					if((button == JU) || (button == JD) || (button == JR) || (button == JL)) {
-						movePlayer(&state, button);
-						button = -1;
-					}
-				}
-			}
-		}
-	}
+	while(!state.gameOver) {}
+
+	/* Cancelling active threads */
+	pthread_cancel(objectThr);
+	pthread_cancel(dThr);
+	pthread_cancel(timeThr);
+	pthread_cancel(cThr);
+
+	printf("Moves Left: " + state.movesLeft); 
+	printf("Lives Left: " + state.livesLeft); 
+	printf("Time Left " + state.timeLeft);
+
+	/* Freeing Frame Buffer */
 	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
+
 	return 0;
 }
 
@@ -394,17 +349,14 @@ void * drawThread() {
 	while(true) {
 		if(state.showStartMenu) { // Checks if we are in the start menu.
 			drawStartScreen();
-			drawFB();
 		} else if(state.winFlag || state.loseFlag) {
 			drawWinLoseBanner();
-			drawFB();
 		} else if(state.showGameMenu) {
 			drawPauseMenu();
-			drawFB();
 		} else {
 			refreshBoard();
-			drawFB();
 		}
+		drawFB();
 	}
 }
 
@@ -413,7 +365,43 @@ void * drawThread() {
  */
 void * controllerThread() {
 	while(true) {
-		button = getButtonPressed(gpioPtr);
+		int button = getButtonPressed(gpioPtr);
+		if(state.showStartMenu) { // Checks if we are in the start menu.
+			if((button == JD) && (activeButton == 1)) {
+				activeButton = 2;
+			} else if((button == JU) && (activeButton == 2)) {
+				activeButton = 1;
+			} else if((button == A) && (activeButton == 1)) { // Starts game.
+				state.showStartMenu = false;
+				activeButton = 1;
+			} else if((button == A) && (activeButton == 2)) { // Exits game.
+				state.gameOver = true;
+			}
+		} else if(state.winFlag || state.loseFlag) {
+			if(button != -1) {
+				state.gameOver = true;
+			}
+		} else if(state.showGameMenu) { // Checks if the game is paused.
+			if((button == JD) && (activeButton == 1)) {
+				activeButton = 2;
+			} else if((button == JU) && (activeButton == 2)) {
+				activeButton = 1;
+			} else if((button == A) && (activeButton == 1)) { // Resumes game.
+				state.showGameMenu = false;
+				activeButton = 1;
+			} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
+				state.showGameMenu = false;
+				state.showStartMenu = true;
+			}
+		} else {
+			if(button == STR) { // Pauses the game.
+				state.showGameMenu = true;
+			} else {
+				if((button == JU) || (button == JD) || (button == JR) || (button == JL)) {
+					movePlayer(&state, button);
+				}
+			}
+		}
 		sleep(0.25);
 	}
 }

@@ -185,6 +185,7 @@ void initState(shared * state) {
     // Initializing the rest
     state->showStartMenu = true;
     state->showGameMenu = false;
+    state->gameOver = false;
     state->score = 0;
     state->livesLeft = 4;
     state->movesLeft = 99;
