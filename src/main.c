@@ -76,93 +76,74 @@ void refreshBoard() {
 		for(int j = 0; j < CELLSX; j++) {
 			char cellType = state.gameMap[i][j];
 			short int *imagePtr;
-			int height;
-			int width;
-			if(cellType == PLAYER) {
-				imagePtr = (short int *) PLAYERIMAGE.pixel_data;
-				height = (int) PLAYERIMAGE.height;
-				width = (int) PLAYERIMAGE.width;
-			} else if(cellType == CASTLE) {
-				imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
-				height = (int) GRNBORDERIMAGE.height;
-				width = (int) GRNBORDERIMAGE.width;
-			} else if(cellType == WINZONE) {
-				imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
-				height = (int) BLUBORDERIMAGE.height;
-				width = (int) BLUBORDERIMAGE.width;
-			} else if(cellType == BLUBORDER) {
-				imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
-				height = (int) BLUBORDERIMAGE.height;
-				width = (int) BLUBORDERIMAGE.width;
-			} else if(cellType == REDBORDER) {
-				imagePtr = (short int *) REDBORDERIMAGE.pixel_data;
-				height = (int) REDBORDERIMAGE.height;
-				width = (int) REDBORDERIMAGE.width;
-			} else if(cellType == GRNBORDER) {
-				imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
-				height = (int) GRNBORDERIMAGE.height;
-				width = (int) GRNBORDERIMAGE.width;
-			} else if(cellType == BLKBORDER) {
-				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
-				height = (int) BLKBORDERIMAGE.height;
-				width = (int) BLKBORDERIMAGE.width;
-			} else if(cellType == ZOMBIE1) {
-				imagePtr = (short int *) ZOMBIE1IMAGE.pixel_data;
-				height = (int) ZOMBIE1IMAGE.height;
-				width = (int) ZOMBIE1IMAGE.width;
-			} else if(cellType == ZOMBIE2) {
-				imagePtr = (short int *) ZOMBIE2IMAGE.pixel_data;
-				height = (int) ZOMBIE2IMAGE.height;
-				width = (int) ZOMBIE2IMAGE.width;
-			} else if(cellType == TILE) {
-				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
-				height = (int) BLKBORDERIMAGE.height;
-				width = (int) BLKBORDERIMAGE.width;
-			} else if(cellType == SPACESHIP1) {
-				imagePtr = (short int *) SPACESHIP1IMAGE.pixel_data;
-				height = (int) SPACESHIP1IMAGE.height;
-				width = (int) SPACESHIP1IMAGE.width;
-			} else if(cellType == SPACESHIP2) {
-				imagePtr = (short int *) SPACESHIP2IMAGE.pixel_data;
-				height = (int) SPACESHIP2IMAGE.height;
-				width = (int) SPACESHIP2IMAGE.width;
-			} else if(cellType == SPACE) {
-				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
-				height = (int) BLKBORDERIMAGE.height;
-				width = (int) BLKBORDERIMAGE.width;
-			} else if(cellType == LOG) {
-				imagePtr = (short int *) LOGIMAGE.pixel_data;
-				height = (int) LOGIMAGE.height;
-				width = (int) LOGIMAGE.width;
-			} else if(cellType == TURTLE) {
-				imagePtr = (short int *) TURTLEIMAGE.pixel_data;
-				height = (int) TURTLEIMAGE.height;
-				width = (int) TURTLEIMAGE.width;
-			} else if(cellType == WATER) {
-				imagePtr = (short int *) WATERIMAGE.pixel_data;
-				height = (int) WATERIMAGE.height;
-				width = (int) WATERIMAGE.width;
-			} else if(cellType == CAR1) {
-				imagePtr = (short int *) CAR1IMAGE.pixel_data;
-				height = (int) CAR1IMAGE.height;
-				width = (int) CAR1IMAGE.width;
-			} else if(cellType == CAR2) {
-				imagePtr = (short int *) CAR2IMAGE.pixel_data;
-				height = (int) CAR2IMAGE.height;
-				width = (int) CAR2IMAGE.width;
-			} else if(cellType == ROAD) {
-				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
-				height = (int) BLKBORDERIMAGE.height;
-				width = (int) BLKBORDERIMAGE.width;
-			} else if(cellType == INFO) {
-				imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
-				height = (int) BLKBORDERIMAGE.height;
-				width = (int) BLKBORDERIMAGE.width;
+			switch(cellType) {
+				case PLAYER:
+					imagePtr = (short int *) PLAYERIMAGE.pixel_data;
+					break;
+				case CASTLE:
+					imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
+					break;
+				case WINZONE:
+					imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
+					break;
+				case BLUBORDER:
+					imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
+					break;
+				case REDBORDER:
+					imagePtr = (short int *) REDBORDERIMAGE.pixel_data;
+					break;
+				case GRNBORDER:
+					imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
+					break;
+				case BLKBORDER:
+					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
+					break;
+				case ZOMBIE1:
+					imagePtr = (short int *) ZOMBIE1IMAGE.pixel_data;
+					break;
+				case ZOMBIE2:
+					imagePtr = (short int *) ZOMBIE2IMAGE.pixel_data;
+					break;
+				case TILE:
+					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
+					break;
+				case SPACESHIP1:
+					imagePtr = (short int *) SPACESHIP1IMAGE.pixel_data;
+					break;
+				case SPACESHIP2:
+					imagePtr = (short int *) SPACESHIP2IMAGE.pixel_data;
+					break;
+				case SPACE:
+					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
+					break;
+				case LOG:
+					imagePtr = (short int *) LOGIMAGE.pixel_data;
+					break;
+				case TURTLE:
+					imagePtr = (short int *) TURTLEIMAGE.pixel_data;
+					break;
+				case WATER:
+					imagePtr = (short int *) WATERIMAGE.pixel_data;
+					break;
+				case CAR1:
+					imagePtr = (short int *) CAR1IMAGE.pixel_data;
+					break;
+				case CAR2:
+					imagePtr = (short int *) CAR2IMAGE.pixel_data;
+					break;
+				case ROAD:
+					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
+					break;
+				case INFO:
+					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
+					break;
 			}
+			/* Calculating Image Position */
 			int starty = (STARTY + (i * 40));
 			int startx = (STARTX + (j * 40));
+
 			// Draw the loaded image.
-			drawImage(starty, startx, height, width, imagePtr);
+			drawImage(starty, startx, 40, 40, imagePtr);
 			counter += 1;
 		}
 	}
@@ -174,22 +155,16 @@ void refreshBoard() {
 void drawStartScreen() {
 	// Declaring Variables
 	short int *startScreenPtr;
-	int height;
-	int width;
 
 	// Initializing Variables based on state
 	if(activeButton == 1) {
 		startScreenPtr = (short int *) StartScreen1.pixel_data;
-		height = (int) StartScreen1.height;
-		width = (int) StartScreen1.width;
 	} else {
 		startScreenPtr = (short int *) StartScreen2.pixel_data;
-		height = (int) StartScreen2.height;
-		width = (int) StartScreen2.width;
 	}
 
 	// Draw Image
-	drawImage(STARTY, STARTX, height, width, startScreenPtr);
+	drawImage(STARTY, STARTX, 720, 1280, startScreenPtr);
 }
 
 /**
@@ -198,24 +173,18 @@ void drawStartScreen() {
 void drawPauseMenu() {
 	// Declaring Variables
 	short int *pauseMenuPtr;
-	int height;
-	int width;
 
 	// Initializing Variables based on state
 	if(activeButton == 1) {
 		pauseMenuPtr = (short int *) PauseMenu1.pixel_data;
-		height = (int) PauseMenu1.height;
-		width = (int) PauseMenu1.width;
 	} else {
 		pauseMenuPtr = (short int *) PauseMenu2.pixel_data;
-		height = (int) PauseMenu2.height;
-		width = (int) PauseMenu2.width;
 	}
 
 	int starty = (STARTY + 120);
 	int startx = (STARTX + 400);
 	// Draw Image
-	drawImage(starty, startx, height, width, pauseMenuPtr);
+	drawImage(starty, startx, 480, 480, pauseMenuPtr);
 }
 
 /**
@@ -224,24 +193,18 @@ void drawPauseMenu() {
 void drawWinLoseBanner() {
 	// Declaring Variables
 	short int *flag;
-	int height;
-	int width;
 
 	// Initializing Variables based on state
 	if(state.winFlag) {
 		flag = (short int *) WinFlag.pixel_data;
-		height = (int) WinFlag.height;
-		width = (int) WinFlag.width;
 	} else {
 		flag = (short int *) LoseFlag.pixel_data;
-		height = (int) LoseFlag.height;
-		width = (int) LoseFlag.width;
 	}
 
 	int starty = (STARTY + 120);
 	int startx = (STARTX + 400);
 	// Draw Image
-	drawImage(starty, startx, height, width, flag);
+	drawImage(starty, startx, 480, 480, flag);
 }
 
 /**
