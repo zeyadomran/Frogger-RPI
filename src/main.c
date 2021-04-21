@@ -392,23 +392,19 @@ void * objectThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
 		sleep(1);
-		int counter = 0;
-		for (int i = 0; i < CELLSY; i++) {
-			for (int j = 0; j < CELLSX; j++) {
-				int x = state.objs[counter].posX;
-				int v = state.objs[counter].velocity;
-				if (v != 0) {
-					if((x + v) < CELLSX && (x + v) >= 0) {
-						x = x + v;
-					} else {
-						if((x + v) >= CELLSX) x = 0;
-						else x = CELLSX - 1;
-					}
-					updateCell(&state, state.objs[counter].type, state.objs[counter].posY, x, v, counter);
+		for (int i = 0; i < (CELLSY * CELLSX); i++) {
+			int x = state.objs[i].posX;
+			int v = state.objs[i].velocity;
+			if (v != 0) {
+				if((x + v) < CELLSX && (x + v) >= 0) {
+					x = x + v;
 				} else {
-					updateCell(&state, state.objs[counter].type, state.objs[counter].posY, x, v, counter);
+					if((x + v) >= CELLSX) x = 0;
+					else x = CELLSX - 1;
 				}
-				counter += 1;
+				updateCell(&state, state.objs[i].type, state.objs[i].posY, x, v, i);
+			} else {
+				updateCell(&state, state.objs[i].type, state.objs[i].posY, x, v, i);
 			}
 		}
 		int x = state.player.posX;
@@ -510,7 +506,12 @@ void * timeThread() {
 		}
 		if((timePlaying % 30) == 0) {
 			int x = getRandomNum(0, (CELLSX - 1));
-			int y = getRandomNum(2, (CELLSY - 2));
+			int y;
+			if(state.scene == 1) {
+				y = getRandomNum(1, (CELLSY - 1));
+			} else {
+				y = getRandomNum(2, 16);
+			}
 			int type = getRandomNum(GIFT1, GIFT5);
 			switch(type) {
 				case 1:

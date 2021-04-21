@@ -393,7 +393,7 @@ void checkCell(shared * state) {
             }
         }
     }
-    if(state->player.posY == 6) {
+    if(state->player.posY <= 6) {
         state->scene = 2;
     } else {
         state->scene = 1;
