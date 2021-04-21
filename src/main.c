@@ -63,9 +63,11 @@ int main(void) {
 	pthread_cancel(timeThr);
 	pthread_cancel(cThr);
 
+	/* Printing Info for debugging */
 	printf("Moves Left: " + state.movesLeft); 
 	printf("Lives Left: " + state.livesLeft); 
 	printf("Time Left " + state.timeLeft);
+	printf("Time Playing " + state.timePlaying);
 
 	/* Freeing Frame Buffer */
 	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
@@ -78,7 +80,7 @@ int main(void) {
 */
 void refreshBoard() {
 	int counter = 0;
-	for(int i = 0; i < CELLSY; i++) {
+	for(int i = 0; i < (CELLSY - 1); i++) {
 		for(int j = 0; j < CELLSX; j++) {
 			char cellType = state.gameMap[i][j];
 			short int *imagePtr;
@@ -251,6 +253,111 @@ void drawWinLoseBanner() {
 }
 
 /**
+ * Gets the pointer to a digit's picture.
+ * 
+ * @param num
+ * 			The digit you want.
+ * @return The digit's image pointer. 
+ */
+short int * getNumPicture(char num) {
+	switch(num) {
+		case '0':
+			return (short int *) ZERO.pixel_data;
+			break;
+		case '1':
+			return (short int *) ONE.pixel_data;
+			break;
+		case '2':
+			return (short int *) TWO.pixel_data;
+			break;
+		case '3':
+			return (short int *) THREE.pixel_data;
+			break;
+		case '4':
+			return (short int *) FOUR.pixel_data;
+			break;
+		case '5':
+			return (short int *) FIVE.pixel_data;
+			break;
+		case '6':
+			return (short int *) SIX.pixel_data;
+			break;
+		case '7':
+			return (short int *) SEVEN.pixel_data;
+			break;
+		case '8':
+			return (short int *) EIGHT.pixel_data;
+			break;
+		case '9':
+			return (short int *) NINE.pixel_data;
+			break;
+	}
+	return (short int *) BLKBORDERIMAGE.pixel_data;
+}
+
+/**
+ * Draws the information bar. 
+ */
+void drawInfoBar() {
+	int livesStart = 0;
+	int movesStart = 100;
+	int scoreStart = 200;
+	int timeStart = 300;
+	int startY = (CELLSY - 1);
+
+	/* Drawing Lives Left */
+	drawImage(startY, livesStart, 40, 80, (short int *) LIVES.pixel_data);
+	for(int i = 0; i < state.livesLeft; i++) drawImage(startY , ((i * 40) + 80 + livesStart), 40, 40, (short int *) PLAYERIMAGE.pixel_data);
+
+	/* Drawing Moves Left */
+	int num = state.movesLeft;
+	char sNum[3];
+	if(num < 10) {
+		sprintf(sNum, "00%d", num);
+	} else if(num < 100) {
+		sprintf(sNum, "0%d", num);
+	} else {
+		sprintf(sNum, "%d", num);
+	}
+	drawImage(startY, movesStart, 40, 80, (short int *) MOVES.pixel_data);
+	for(int i = 0; i < 3; i++) {
+		drawImage(startY , ((i * 40) + 80 + movesStart), 40, 40, getNumPicture(sNum[i]));
+	}
+
+	/* Drawing Moves Left */
+	int num = state.score;
+	char sNum[3];
+	if(num < 10) {
+		sprintf(sNum, "00%d", num);
+	} else if(num < 100) {
+		sprintf(sNum, "0%d", num);
+	} else {
+		sprintf(sNum, "%d", num);
+	}
+	drawImage(startY, scoreStart, 40, 80, (short int *) SCORE.pixel_data);
+	for(int i = 0; i < 3; i++) {
+		drawImage(startY , ((i * 40) + 80 + scoreStart), 40, 40, getNumPicture(sNum[i]));
+	}
+
+	/* Drawing Moves Left */
+	int num = state.timeLeft;
+	char sNum[3];
+	if(num < 10) {
+		sprintf(sNum, "00%d", num);
+	} else if(num < 100) {
+		sprintf(sNum, "0%d", num);
+	} else {
+		sprintf(sNum, "%d", num);
+	}
+	drawImage(startY, timeStart, 40, 80, (short int *) MOVES.pixel_data);
+	for(int i = 0; i < 3; i++) {
+		drawImage(startY , ((i * 40) + 80 + timeStart), 40, 40, getNumPicture(sNum[i]));
+	}
+}
+
+
+
+/**
  * Draws an image to the framebuffer.
  * 
  * @param starty
@@ -309,7 +416,7 @@ void * objectThread() {
         while(state.showStartMenu || state.showGameMenu) {}
 		sleep(0.8);
 		int counter = 0;
-		for (int i = 0; i < CELLSY; i++) {
+		for (int i = 0; i < (CELLSY - 1); i++) {
 			for (int j = 0; j < CELLSX; j++) {
 				int x = state.objs[counter].posX;
 				int v = state.objs[counter].velocity;
@@ -355,6 +462,7 @@ void * drawThread() {
 			drawPauseMenu();
 		} else {
 			refreshBoard();
+			drawInfoBar();
 		}
 		drawFB();
 	}
@@ -415,6 +523,9 @@ void * timeThread() {
 		int timeLeft = state.timeLeft;
 		timeLeft -= 1;
 		state.timeLeft = timeLeft;
+		int timePlaying = state.timePlaying;
+		timePlaying += 1;
+		state.timePlaying = timePlaying;
 		if(state.timeLeft <= 0) {
 			state.loseFlag = true;
 		}

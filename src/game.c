@@ -192,6 +192,7 @@ void initState(shared * state) {
     state->winFlag = false;
     state->loseFlag = false;
     state->timeLeft = 240;
+    state->timePlaying = 0;
     srand(time(0));
     loadGameMap(state);
 }

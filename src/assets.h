@@ -4,8 +4,29 @@
 /* All art assets. */
 #include "StartScreen1.h"
 #include "StartScreen2.h"
+
 #include "PauseMenu1.h"
 #include "PauseMenu2.h"
+
+#include "WINFLAG.h"
+#include "LOSEFLAG.h"
+
+#include "Score.h"
+#include "Lives.h"
+#include "Moves.h"
+#include "Time.h"
+
+#include "Zero.h"
+#include "One.h"
+#include "Two.h"
+#include "Three.h"
+#include "Four.h"
+#include "Five.h"
+#include "Six.h"
+#include "Seven.h"
+#include "Eight.h"
+#include "Nine.h"
+
 #include "Player.h"
 #include "BlkBorder.h"
 #include "GRNBORDER.h"
@@ -20,7 +41,5 @@
 #include "ZOMBIE2.h"
 #include "SPACESHIP1.h"
 #include "SPACESHIP2.h"
-#include "WINFLAG.h"
-#include "LOSEFLAG.h"
 
 #endif 

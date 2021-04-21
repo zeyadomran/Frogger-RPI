@@ -72,6 +72,7 @@ typedef struct {
     bool winFlag;
     bool loseFlag;
     int timeLeft;
+    int timePlaying;
 } shared;
 
 /* Prototypes */
