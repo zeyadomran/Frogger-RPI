@@ -227,7 +227,7 @@ void movePlayer(shared * state, int direction) {
             }
             break;
         case JR:
-            if(x < CELLSX) {
+            if(x < CELLSX - 1) {
                 x += 1;
                 playerMoved = true;
             }
@@ -235,11 +235,12 @@ void movePlayer(shared * state, int direction) {
     }
     if(playerMoved) {
         state->movesLeft -= 1;
-        if(state->movesLeft >= 0) {
+        if(state->movesLeft <= 0) {
             state->loseFlag = true;
         } else {
             updatePlayer(state, PLAYER, y, x, state->player.velocity);
         }
+        checkCell(state);
     }
 }
 
@@ -262,6 +263,7 @@ void checkCell(shared * state) {
                     if(state->livesLeft <= 0) {
                         state->loseFlag = true;
                     }
+                    updatePlayer(state, PLAYER, 17, (CELLSX / 2), state->player.velocity);
                 } else if((type == WINZONE)) {
                     state->winFlag = true;
                 } else if((type == LOG) || (type == TURTLE)) {

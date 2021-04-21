@@ -37,7 +37,7 @@ void Init_GPIO(unsigned int *gpioptr) {
 
 /**  
     Write_Latch writes to the Latch pin a 0 or a 1.
-    @param write, write is used to store wheter you wish to write a 1 or 0.
+    @param write, write is used to store whether you wish to write a 1 or 0.
     @param *gpioptr, *gpioptr stores the GPIO base.
 */
 void Write_Latch(int write, unsigned int *gpioptr) { 
@@ -50,7 +50,7 @@ void Write_Latch(int write, unsigned int *gpioptr) {
 
 /**  
     Write_Clock writes to the Clock pin a 0 or a 1.
-    @param write, write is used to store wheter you wish to write a 1 or 0.
+    @param write, write is used to store whether you wish to write a 1 or 0.
     @param *gpioptr, *gpioptr stores the GPIO base.
 */
 void Write_Clock(int write, unsigned int *gpioptr) {

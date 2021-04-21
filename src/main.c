@@ -62,19 +62,25 @@ int main(void) {
 		if(state.showStartMenu) { // Checks if we are in the start menu.
 			if((button == JD) && (activeButton == 1)) {
 				activeButton = 2;
+				button = -1;
 			} else if((button == JU) && (activeButton == 2)) {
 				activeButton = 1;
+				button = -1;
 			} else if((button == A) && (activeButton == 1)) { // Starts game.
 				state.showStartMenu = false;
 				activeButton = 1;
+				button = -1;
 			} else if((button == A) && (activeButton == 2)) { // Exits game.
 				munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 				exit(0);
 			}
 		} else if(state.winFlag || state.loseFlag) {
 			pthread_cancel(objectThr);
-			pthread_cancel(dThr);
+			printf("Moves Left: " + state.movesLeft); 
+			printf("Lives Left: " + state.livesLeft); 
+			printf("Time Left " + state.timeLeft);
 			if(button != -1) {
+				pthread_cancel(dThr);
 				munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 				exit(0);
 			}
@@ -82,26 +88,31 @@ int main(void) {
 			if(state.showGameMenu) { // Checks if the game is paused.
 				if((button == JD) && (activeButton == 1)) {
 					activeButton = 2;
+					button = -1;
 				} else if((button == JU) && (activeButton == 2)) {
 					activeButton = 1;
+					button = -1;
 				} else if((button == A) && (activeButton == 1)) { // Resumes game.
 					state.showGameMenu = false;
 					activeButton = 1;
+					button = -1;
 				} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
 					state.showGameMenu = false;
 					state.showStartMenu = true;
+					button = -1;
 				}
 			} else {
 				if(button == STR) { // Pauses the game.
 					state.showGameMenu = true;
+					button = -1;
 				} else {
 					if((button == JU) || (button == JD) || (button == JR) || (button == JL)) {
 						movePlayer(&state, button);
+						button = -1;
 					}
 				}
 			}
 		}
-		sleep(0.125);
 	}
 	munmap(framebufferstruct.fptr, framebufferstruct.screenSize);
 	return 0;
@@ -341,32 +352,37 @@ void drawFB() {
 void * objectThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		sleep(0.3);
+		sleep(0.8);
 		int counter = 0;
 		for (int i = 0; i < CELLSY; i++) {
 			for (int j = 0; j < CELLSX; j++) {
 				int x = state.objs[counter].posX;
 				int v = state.objs[counter].velocity;
-				if((x + v) < CELLSX && (x + v) >= 0) {
-					x = x + v;
+				if (v != 0) {
+					if((x + v) < CELLSX && (x + v) >= 0) {
+						x = x + v;
+					} else {
+						if((x + v) >= CELLSX) x = 0;
+						else x = CELLSX - 1;
+					}
+					updateCell(&state, state.objs[counter].type, state.objs[counter].posY, x, v, counter);
 				} else {
-					if((x + v) >= CELLSX) x = 0;
-					else x = CELLSX - 1;
+					updateCell(&state, state.objs[counter].type, state.objs[counter].posY, x, v, counter);
 				}
-				state.objs[counter].posX = x;
-				updateCell(&state, state.objs[counter].type, state.objs[counter].posY, state.objs[counter].posX, state.objs[counter].velocity, counter);
 				counter += 1;
 			}
 		}
 		int x = state.player.posX;
 		int v = state.player.velocity;
-		if((x + v) < CELLSX && (x + v) >= 0) {
-			x = x + v;
-		} else {
-			if((x + v) >= CELLSX) x = 0;
-			else x = CELLSX - 1;
+		if(v != 0) {
+			if((x + v) < CELLSX && (x + v) >= 0) {
+				x = x + v;
+			} else {
+				if((x + v) >= CELLSX) x = 0;
+				else x = CELLSX - 1;
+			}
+			updatePlayer(&state, PLAYER, state.player.posY, x, v);
 		}
-		state.player.posX = x;
 		checkCell(&state);
     }
 }
@@ -376,7 +392,6 @@ void * objectThread() {
  */
 void * drawThread() {
 	while(true) {
-		sleep(0.016);
 		if(state.showStartMenu) { // Checks if we are in the start menu.
 			drawStartScreen();
 			drawFB();
@@ -399,7 +414,7 @@ void * drawThread() {
 void * controllerThread() {
 	while(true) {
 		button = getButtonPressed(gpioPtr);
-		sleep(0.125);
+		sleep(0.25);
 	}
 }
 
