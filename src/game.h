@@ -69,6 +69,7 @@ typedef struct {
     int score;
     int livesLeft;
     int movesLeft;
+    int highestLane;
     bool winFlag;
     bool loseFlag;
     int timeLeft;

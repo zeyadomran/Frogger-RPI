@@ -457,7 +457,9 @@ void * drawThread() {
 		if(state.showStartMenu) { // Checks if we are in the start menu.
 			drawStartScreen();
 		} else if(state.winFlag || state.loseFlag) {
+			state.score += (state.timeLeft + state.movesLeft + state.livesLeft) * 1.25;
 			drawWinLoseBanner();
+			drawInfoBar();
 		} else if(state.showGameMenu) {
 			drawPauseMenu();
 		} else {

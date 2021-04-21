@@ -188,7 +188,8 @@ void initState(shared * state) {
     state->gameOver = false;
     state->score = 0;
     state->livesLeft = 4;
-    state->movesLeft = 99;
+    state->movesLeft = 199;
+    state->highestLane = CELLSY - 1;
     state->winFlag = false;
     state->loseFlag = false;
     state->timeLeft = 240;
@@ -213,6 +214,9 @@ void movePlayer(shared * state, int direction) {
         case JU:
             if(y > 0) {
                 y -= 1;
+                if(y < state->highestLane) {
+                    state->score += 10;
+                }
                 playerMoved = true;
             }
             break;
