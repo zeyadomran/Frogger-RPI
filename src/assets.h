@@ -27,6 +27,12 @@
 #include "Eight.h"
 #include "Nine.h"
 
+#include "Gift1.h"
+#include "Gift3.h"
+#include "Gift4.h"
+#include "COIN.h"
+#include "Heart.h"
+
 #include "Player.h"
 #include "BlkBorder.h"
 #include "GRNBORDER.h"

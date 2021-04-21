@@ -137,6 +137,21 @@ void refreshBoard() {
 				case INFO:
 					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
 					break;
+				case GIFT1:
+					imagePtr = (short int *) GIFT1IMAGE.pixel_data;
+					break;
+				case GIFT2:
+					imagePtr = (short int *) GIFT3IMAGE.pixel_data;
+					break;
+				case GIFT3:
+					imagePtr = (short int *) GIFT4IMAGE.pixel_data;
+					break;
+				case GIFT4:
+					imagePtr = (short int *) COIN.pixel_data;
+					break;
+				case GIFT5:
+					imagePtr = (short int *) LIVES.pixel_data;
+					break;
 			}
 			/* Calculating Image Position */
 			int starty = (STARTY + (i * 40));
@@ -482,6 +497,28 @@ void * timeThread() {
 		state.timePlaying = timePlaying;
 		if(state.timeLeft <= 0) {
 			state.loseFlag = true;
+		}
+		if((timePlaying % 30) == 0) {
+			int x = getRandomNum(0, (CELLSX - 1));
+			int y = getRandomNum(2, (CELLSY - 2));
+			int type = getRandomNum(GIFT1, GIFT5);
+			switch(type) {
+				case 1:
+					updateGift(&state, y, x, GIFT1);
+					break;
+				case 2:
+					updateGift(&state, y, x, GIFT2);
+					break;
+				case 3:
+					updateGift(&state, y, x, GIFT3);
+					break;
+				case 4:
+					updateGift(&state, y, x, GIFT4);
+					break;
+				case 5:
+					updateGift(&state, y, x, GIFT5);
+					break;
+			}
 		}
 		sleep(1);
 	}

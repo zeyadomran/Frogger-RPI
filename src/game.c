@@ -134,6 +134,7 @@ void loadGameMap(shared * state) {
             counter += 1;
         }
     }
+    createGift(state, 0, 0, GIFT1);
 }
 
 /**
@@ -219,6 +220,28 @@ void initState(shared * state) {
 }
 
 /**
+ * Creates a gift to be displayed on the game map. 
+ * 
+ * @param state
+ *          The game's state.
+ * @param y
+ *          The y position of the gift.
+ * @param x
+ *          The x position of the gift.
+ * @param type
+ *          The type of gift.
+ */
+void updateGift(shared * state, int y, int x, char type) {
+    state->gift.type = GIFT1;
+    state->gift.posY = y;
+    state->gift.posX = x;
+    state->gift.velocity = 0;
+    if(!(y == 0) && !(x == 0)) {
+        state->gameMap[y][x] = type;
+    }
+}
+
+/**
  * Moves the player. 
  * 
  * @param state
@@ -271,6 +294,44 @@ void movePlayer(shared * state, int direction) {
 }
 
 /**
+ * Checks a player collision with a gift
+ * 
+ * @param state
+ *              The game's state. 
+ */
+void checkGift(shared * state) {
+    if((state->player.posX == state->gift.posX) && (state->player.posY == state->gift.posY)) {
+        char type = state->gift.type;
+        switch(type) {
+            case GIFT1:
+                state->movesLeft += 10;
+                break;
+            case GIFT2:
+                state->movesLeft += 5;
+                state->timeLeft += 10;
+                break;
+            case GIFT3:
+                state->movesLeft += 10;
+                state->timeLeft += 10;
+                if(state->livesLeft < 6) {
+                    state->livesLeft += 1;
+                }
+                break;
+            case GIFT4:
+                state->score += 50;
+                break;
+            case GIFT5:
+                if(state->livesLeft < 6) {
+                    state->livesLeft += 1;
+                }
+                break;
+        }
+        updateGift(state, 0, 0, GIFT1);
+    }
+    updateGift(state, state->gift.posY, state->gift.posX, GIFT1);
+}
+
+/**
  * Checks the cell the player is currently in.
  * 
  * @param state
@@ -308,4 +369,5 @@ void checkCell(shared * state) {
             }
         }
     }
+    checkGift(state);
 }
