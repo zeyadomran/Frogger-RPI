@@ -18,7 +18,6 @@ void loadGameMap(shared * state) {
     int temp = 0;
     int lastLog1 = 0;
     int lastLog2 = 0;
-    int seed = time(0);
     for(int i = 0; i < CELLSY; i++) {
         for(int j = 0; j < CELLSX; j++) {
             switch(i) {
@@ -37,22 +36,22 @@ void loadGameMap(shared * state) {
                 break;
             // Challenge 4
             case 2:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, ZOMBIE2, i, j, -1, counter);
                 else updateCell(state, TILE, i, j, -1, counter);
                 break;
             case 3:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, ZOMBIE1, i, j, 1, counter);
                 else updateCell(state, TILE, i, j, 1, counter);
                 break;
             case 4:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, ZOMBIE2, i, j, -1, counter);
                 else updateCell(state, TILE, i, j, -1, counter);
                 break;
             case 5:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, ZOMBIE1, i, j, 1, counter);
                 else updateCell(state, TILE, i, j, 1, counter);
                 break;
@@ -61,22 +60,22 @@ void loadGameMap(shared * state) {
                 break;
             // Challenge 3
             case 7:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, SPACESHIP2, i, j, -1, counter);
                 else updateCell(state, SPACE, i, j, -1, counter);
                 break;
             case 8:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, SPACESHIP1, i, j, 1, counter);
                 else updateCell(state, SPACE, i, j, 1, counter);
                 break;
             case 9:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, SPACESHIP2, i, j, -1, counter);
                 else updateCell(state, SPACE, i, j, -1, counter);
                 break;
             case 10:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, SPACESHIP1, i, j, 1, counter);
                 else updateCell(state, SPACE, i, j, 1, counter);
                 break;
@@ -85,36 +84,42 @@ void loadGameMap(shared * state) {
                 break;
             // Challenge 2
             case 12:
-                randNum = getRandomNum(0, 4, &seed);
-                if(randNum == 1) updateCell(state, TURTLE, i, j, -1, counter);
-                else updateCell(state, WATER, i, j, -1, counter);
+                randNum = getRandomNum(state, 0, 4);
+                if(randNum == 1) updateCell(state, TURTLE, i, j, 1, counter);
+                else updateCell(state, WATER, i, j, 1, counter);
                 break;
             case 13:
-                if(lastLog1 <= 4) {
-                    randNum = getRandomNum(1, 3, &seed);
+                if(lastLog1 <= 3) {
+                    randNum = getRandomNum(state, 1, 3);
                     if(randNum != lastLog1) {
-                        updateCell(state, LOG, i, j, 1, counter);
+                        updateCell(state, LOG, i, j, -1, counter);
                     }
                     lastLog1++;
-                } else if(lastLog1 > 4) {
-                    updateCell(state, WATER, i, j, 1, counter);
-                    lastLog1 = 0;
+                } else if(lastLog1 > 3) {
+                    updateCell(state, WATER, i, j, -1, counter);
+                    randNum = getRandomNum(state, 1, 3);
+                    if(randNum != 2) {
+                        lastLog1 = 0;
+                    }
                 }
                 break;
             case 14:
-                if(lastLog2 <= 4) {
-                    randNum = getRandomNum(1, 3, &seed);
+                if(lastLog2 <= 3) {
+                    randNum = getRandomNum(state, 1, 3);
                     if(randNum != lastLog2) {
-                        updateCell(state, LOG, i, j, -1, counter);
+                        updateCell(state, LOG, i, j, 1, counter);
                     }
                     lastLog2++;
-                } else if(lastLog2 > 4) {
-                    updateCell(state, WATER, i, j, -1, counter);
-                    lastLog2 = 0;
+                } else if(lastLog2 > 3) {
+                    updateCell(state, WATER, i, j, 1, counter);
+                    randNum = getRandomNum(state, 1, 3);
+                    if(randNum != 2) {
+                        lastLog2 = 0;
+                    }
                 }
                 break;
             case 15:
-                randNum = getRandomNum(0, 4, &seed);
+                randNum = getRandomNum(state, 0, 4);
                 if(randNum == 1) updateCell(state, TURTLE, i, j, -1, counter);
                 else updateCell(state, WATER, i, j, -1, counter);
                 break;
@@ -123,22 +128,22 @@ void loadGameMap(shared * state) {
                 break;
             // Challenge 1
             case 17:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, CAR1, i, j, -1, counter);
                 else updateCell(state, ROAD, i, j, -1, counter);
                 break;
             case 18:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, CAR2, i, j, 1, counter);
                 else updateCell(state, ROAD, i, j, 1, counter);
                 break;
             case 19:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, CAR1, i, j, -1, counter);
                 else updateCell(state, ROAD, i, j, -1, counter);
                 break;
             case 20:
-                randNum = getRandomNum(0, 6, &seed);
+                randNum = getRandomNum(state, 0, 6);
                 if(randNum == 1) updateCell(state, CAR2, i, j, 1, counter);
                 else updateCell(state, ROAD, i, j, 1, counter);
                 break;
@@ -207,15 +212,33 @@ void updatePlayer(shared * state, char type, int y, int x, int velocity) {
 /**
  * Get a random number in a certain range.
  * 
+ * @param state
+ *              The game's state.
  * @param lowerLimit
  *              The lowest number you wish to get.
  * @param upperLimit
  *              The highest number you wish to get.
- * @param seed
- *              The seed for the random number.
  * @return The number generated.
 */
-int getRandomNum(int lowerLimit, int upperLimit, int * seed) { return ((rand_r(seed) % ((upperLimit - lowerLimit + 1))) + lowerLimit); } 
+int getRandomNum(shared * state, int lowerLimit, int upperLimit) { 
+    // I got this from the rand_r docs since rand_r wasn't working for me when i call it from a thread
+    // https://code.woboq.org/userspace/glibc/stdlib/rand_r.c.html
+    unsigned int next = state->seed;
+    int result;
+    next *= 1103515245;
+    next += 12345;
+    result = (unsigned int) (next / 65536) % 2048;
+    next *= 1103515245;
+    next += 12345;
+    result <<= 10;
+    result ^= (unsigned int) (next / 65536) % 1024;
+    next *= 1103515245;
+    next += 12345;
+    result <<= 10;
+    result ^= (unsigned int) (next / 65536) % 1024;
+    state->seed = next;
+    return (((result % ((upperLimit - lowerLimit + 1))) + lowerLimit)); 
+} 
 
 /**
  * Initializes the state.
@@ -232,6 +255,7 @@ void initState(shared * state) {
     state->gameOver = false;
     state->score = 0;
     state->scene = 1;
+    state->seed = (unsigned int) time(0);
     state->livesLeft = 4;
     state->movesLeft = 100;
     state->highestLane = 21;
@@ -328,25 +352,30 @@ void checkGift(shared * state) {
         char type = state->gift.type;
         switch(type) {
             case GIFT1:
-                state->movesLeft += 10;
+                state->movesLeft += 5;
                 break;
             case GIFT2:
-                state->movesLeft += 5;
-                state->timeLeft += 10;
+                state->movesLeft += 10;
+                int timeLeft = state->timeLeft + 10;
+                state->timeLeft = timeLeft;
                 break;
             case GIFT3:
-                state->movesLeft += 10;
-                state->timeLeft += 10;
+                state->movesLeft += 15;
+                int timeLeft = state->timeLeft + 15;
+                state->timeLeft = timeLeft;
                 if(state->livesLeft < 6) {
-                    state->livesLeft += 1;
+                    int lives = state->livesLeft + 1;
+                    state->livesLeft = lives;
                 }
                 break;
             case GIFT4:
-                state->score += 50;
+                int score = state->score + 50;
+                state->score = score;
                 break;
             case GIFT5:
                 if(state->livesLeft < 6) {
-                    state->livesLeft += 1;
+                    int lives = state->livesLeft + 2;
+                    state->livesLeft = lives;
                 }
                 break;
         }
@@ -385,11 +414,8 @@ void checkCell(shared * state) {
                 if(state->livesLeft <= 0) {
                     state->loseFlag = true;
                 }
-                if(state->scene == 2) {
-                    updatePlayer(state, PLAYER, 16, (CELLSX / 2), 0);
-                } else {
-                    updatePlayer(state, PLAYER, 21, (CELLSX / 2), 0);
-                }
+                state->scene = 1;
+                updatePlayer(state, PLAYER, 21, (CELLSX / 2), 0);
             } else if(type == WINZONE) {
                 state->winFlag = true;
             } else if((type == LOG) || (type == TURTLE)) {

@@ -119,6 +119,6 @@ int getButtonPressed(unsigned int *gpioPtr) {
     Read_SNES(gpioPtr, buttonArray);
     button = buttonPressed(buttonArray);
     resetButtonArray(buttonArray);
-    delay(125);
+    delay(175);
     return button;
 }

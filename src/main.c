@@ -52,6 +52,7 @@ int main(void) {
 	pthread_t timeThr; 
 	pthread_create(&timeThr, NULL, timeThread, NULL);
 
+	int seed = time(0) + 106;
 	/* Program loop */
 	while(!state.gameOver) {}
 
@@ -292,43 +293,56 @@ void numToString(char sNum[50], int num) {
  * Draws the information bar. 
  */
 void drawInfoBar() {
-	int livesStart = 20;
+	int livesStart = 860;
 	int movesStart = 300;
 	int scoreStart = 580;
-	int timeStart = 860;
+	int timeStart = 20;
 	int startY = 17 * 40;
 
 	for(int i = 0; i < CELLSX; i++) drawImage(startY , (i * 40), 40, 40, (short int *) BLKBORDERIMAGE.pixel_data);
 
-	/* Drawing Lives Left */
-	drawImage(startY, livesStart, 40, 80, (short int *) LIVES.pixel_data);
-	for(int i = 0; i < state.livesLeft; i++) drawImage(startY , ((i * 40) + 80 + livesStart), 40, 40, (short int *) PLAYERIMAGE.pixel_data);
+	if(state.winFlag || state.loseFlag) {
+		/* Drawing Lives Left */
+		int num = state.score;
+		char scoreNum[50];
+		numToString(scoreNum, num);
+		drawImage(startY, 475, 40, 80, (short int *) SCORE.pixel_data);
+		for(int i = 0; i < 3; i++) {
+			drawImage(220 , ((i * 40) + 80 + 475), 40, 40, getNumPicture(scoreNum[i]));
+		}
+	} else {
+		/* Drawing Lives Left */
+		drawImage(startY, livesStart, 40, 80, (short int *) LIVES.pixel_data);
+		for(int i = 0; i < state.livesLeft; i++) {
+			drawImage(220 , ((i * 40) + 80 + 475), 40, 40, (short int *) PLAYERIMAGE.pixel_data);
+		}
 
-	/* Drawing Moves Left */
-	int num = state.movesLeft;
-	char movesNum[50];
-	numToString(movesNum, num);
-	drawImage(startY, movesStart, 40, 80, (short int *) MOVES.pixel_data);
-	for(int i = 0; i < 3; i++) {
-		drawImage(startY , ((i * 40) + 80 + movesStart), 40, 40, getNumPicture(movesNum[i]));
-	}
+		/* Drawing Moves Left */
+		int num = state.movesLeft;
+		char movesNum[50];
+		numToString(movesNum, num);
+		drawImage(startY, movesStart, 40, 80, (short int *) MOVES.pixel_data);
+		for(int i = 0; i < 3; i++) {
+			drawImage(startY , ((i * 40) + 85 + movesStart), 40, 40, getNumPicture(movesNum[i]));
+		}
 
-	/* Drawing Score */
-	num = state.score;
-	char scoreNum[50];
-	numToString(scoreNum, num);
-	drawImage(startY, scoreStart, 40, 80, (short int *) SCORE.pixel_data);
-	for(int i = 0; i < 3; i++) {
-		drawImage(startY , ((i * 40) + 80 + scoreStart), 40, 40, getNumPicture(scoreNum[i]));
-	}
+		/* Drawing Score */
+		num = state.score;
+		char scoreNum[50];
+		numToString(scoreNum, num);
+		drawImage(startY, scoreStart, 40, 80, (short int *) SCORE.pixel_data);
+		for(int i = 0; i < 3; i++) {
+			drawImage(startY , ((i * 40) + 80 + scoreStart), 40, 40, getNumPicture(scoreNum[i]));
+		}
 
-	/* Drawing Time Left */
-	num = state.timeLeft;
-	char timeNum[50];
-	numToString(timeNum, num);
-	drawImage(startY, timeStart, 40, 80, (short int *) TIME.pixel_data);
-	for(int i = 0; i < 3; i++) {
-		drawImage(startY , ((i * 40) + 80 + timeStart), 40, 40, getNumPicture(timeNum[i]));
+		/* Drawing Time Left */
+		num = state.timeLeft;
+		char timeNum[50];
+		numToString(timeNum, num);
+		drawImage(startY, timeStart, 40, 80, (short int *) TIME.pixel_data);
+		for(int i = 0; i < 3; i++) {
+			drawImage(startY , ((i * 40) + 80 + timeStart), 40, 40, getNumPicture(timeNum[i]));
+		}
 	}
 }
 
@@ -393,15 +407,18 @@ void * objectThread() {
 		sleep(1);
 		int startYLoop;
 		int endYLoop;
+		int counter;
 		if(state.scene == 1) {
 			startYLoop = 5;
 			endYLoop = CELLSY;
+			counter = (5 * CELLSX);
 		} else {
 			startYLoop = 0;
 			endYLoop = 16;
+			counter = 0;
 		}
-		int counter = 0;
-		for (int i = startYLoop; i < endYLoop; i++) {
+		counter = 0;
+		for (int i = 0; i < CELLSY; i++) {
 			for(int j = 0; j < CELLSX; j++) {
 				int x = state.objs[counter].posX;
 				int v = state.objs[counter].velocity;
@@ -473,7 +490,8 @@ void * controllerThread() {
 			}
 		} else if(state.winFlag || state.loseFlag) {
 			if(button != -1) {
-				state.gameOver = true;
+				state.showStartMenu = true;
+				initState(&state);
 			}
 		} else if(state.showGameMenu) { // Checks if the game is paused.
 			if((button == JD) && (activeButton == 1)) {
@@ -486,6 +504,7 @@ void * controllerThread() {
 			} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
 				state.showGameMenu = false;
 				state.showStartMenu = true;
+				initState(&state);
 			}
 		} else {
 			if(button == STR) { // Pauses the game.
@@ -503,7 +522,6 @@ void * controllerThread() {
  * The function that will handle the time thread. 
  */
 void * timeThread() {
-	int seed = time(0) + 1;
 	while(true) {
 		while(state.showStartMenu || state.showGameMenu) {}
 		int timeLeft = state.timeLeft;
@@ -517,14 +535,14 @@ void * timeThread() {
 		}
 		if(state.timePlaying == 30) {
 			state.timePlaying = 0;
-			int x = getRandomNum(0, (CELLSX - 1), &seed);
+			int x = getRandomNum(&state, 0, (CELLSX - 1));
 			int y;
 			if(state.scene == 1) {
-				y = getRandomNum(1, (CELLSY - 1), &seed);
+				y = getRandomNum(&state, 5, (CELLSY - 1));
 			} else {
-				y = getRandomNum(2, 16, &seed);
+				y = getRandomNum(&state, 2, 16);
 			}
-			int type = getRandomNum(GIFT1, GIFT5, &seed);
+			int type = getRandomNum(&state, 1, 5);
 			switch(type) {
 				case 1:
 					updateGift(&state, y, x, GIFT1);
