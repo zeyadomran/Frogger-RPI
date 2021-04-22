@@ -350,31 +350,34 @@ void movePlayer(shared * state, int direction) {
 void checkGift(shared * state) {
     if((state->player.posX == state->gift.posX) && (state->player.posY == state->gift.posY)) {
         char type = state->gift.type;
+        int lives;
+        int timeLeft;
+        int score;
         switch(type) {
             case GIFT1:
                 state->movesLeft += 5;
                 break;
             case GIFT2:
                 state->movesLeft += 10;
-                int timeLeft = state->timeLeft + 10;
+                timeLeft = state->timeLeft + 10;
                 state->timeLeft = timeLeft;
                 break;
             case GIFT3:
                 state->movesLeft += 15;
-                int timeLeft = state->timeLeft + 15;
+                timeLeft = state->timeLeft + 15;
                 state->timeLeft = timeLeft;
                 if(state->livesLeft < 6) {
-                    int lives = state->livesLeft + 1;
+                    lives = state->livesLeft + 1;
                     state->livesLeft = lives;
                 }
                 break;
             case GIFT4:
-                int score = state->score + 50;
+                score = state->score + 50;
                 state->score = score;
                 break;
             case GIFT5:
                 if(state->livesLeft < 6) {
-                    int lives = state->livesLeft + 2;
+                    lives = state->livesLeft + 2;
                     state->livesLeft = lives;
                 }
                 break;
