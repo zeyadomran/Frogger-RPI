@@ -62,9 +62,14 @@ typedef struct {
     int velocity;
 } Object;
 
+typedef struct {
+    char type;
+    int posX;
+} GameMap;
+
 /* The game's shared struct. */
 typedef struct {
-    char gameMap[CELLSY][CELLSX];
+    GameMap gameMap[CELLSY][CELLSX];
     Object objs[CELLSY * CELLSX];
     Object player;
     Object gift;

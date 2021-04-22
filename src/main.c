@@ -81,10 +81,9 @@ void refreshBoard() {
 		startYLoop = 0;
 		endYLoop = 16;
 	}
-	int counter = 0;
 	for(int i = startYLoop; i < endYLoop; i++) {
 		for(int j = 0; j < CELLSX; j++) {
-			char cellType = state.gameMap[i][j];
+			char cellType = state.gameMap[i][j].type;
 			short int *imagePtr;
 			switch(cellType) {
 				case PLAYER:
@@ -157,14 +156,14 @@ void refreshBoard() {
 					imagePtr = (short int *) COIN.pixel_data;
 					break;
 				case GIFT5:
-					imagePtr = (short int *) LIVES.pixel_data;
+					imagePtr = (short int *) Heart.pixel_data;
 					break;
 				default:
 					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
 			}
 			/* Calculating Image Position */
 			int starty;
-			int startx= (STARTX + (j * 40));
+			int startx = (STARTX + state.gameMap[i][j].posX);
 
 			if(state.scene == 1) {
 				starty = (STARTY + ((i - 5) * 40));
@@ -174,7 +173,6 @@ void refreshBoard() {
 
 			// Draw the loaded image.
 			drawImage(starty, startx, 40, 40, imagePtr);
-			counter++;
 		}
 	}
 }
@@ -371,7 +369,7 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr) {
 	for(int y = 0; y < height; y++) {
 		for(int x = 0; x < width; x++) {
 			pixel.color = ptr[i];
-			pixel.x = startx + x;
+			pixel.x = ((startx + x) % WIDTH);
 			pixel.y = starty + y;
 			stagePixel(&pixel);
 			i++;
@@ -404,7 +402,7 @@ void drawFB() {
 void * objectThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		delay(625);
+		delay(300);
 		int startYLoop;
 		int endYLoop;
 		int counter;
@@ -423,11 +421,11 @@ void * objectThread() {
 				int x = state.objs[counter].posX;
 				int v = state.objs[counter].velocity;
 				if (v != 0) {
-					if((x + v) < CELLSX && (x + v) >= 0) {
+					if((x + v) < WIDTH && (x + v) >= 0) {
 						x = x + v;
 					} else {
-						if((x + v) >= CELLSX) x = 0;
-						else x = CELLSX - 1;
+						if((x + v) >= WIDTH) x = 0;
+						else x = WIDTH - 40;
 					}
 				}
 				updateCell(&state, state.objs[counter].type, state.objs[counter].posY, x, v, counter);
@@ -437,11 +435,11 @@ void * objectThread() {
 		int x = state.player.posX;
 		int v = state.player.velocity;
 		if(v != 0) {
-			if((x + v) < CELLSX && (x + v) >= 0) {
+			if((x + v) < WIDTH && (x + v) >= 0) {
 				x = x + v;
 			} else {
-				if((x + v) >= CELLSX) x = 0;
-				else x = CELLSX - 1;
+				if((x + v) >= WIDTH) x = 0;
+				else x = WIDTH - 40;
 			}
 			updatePlayer(&state, PLAYER, state.player.posY, x, v);
 		}
