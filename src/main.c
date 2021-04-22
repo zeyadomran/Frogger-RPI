@@ -306,15 +306,15 @@ void drawInfoBar() {
 		int num = state.score;
 		char scoreNum[50];
 		numToString(scoreNum, num);
-		drawImage(startY, 475, 40, 80, (short int *) SCORE.pixel_data);
+		drawImage(250, 475, 40, 80, (short int *) SCORE.pixel_data);
 		for(int i = 0; i < 3; i++) {
-			drawImage(220 , ((i * 40) + 80 + 475), 40, 40, getNumPicture(scoreNum[i]));
+			drawImage(250 , ((i * 40) + 80 + 475), 40, 40, getNumPicture(scoreNum[i]));
 		}
 	} else {
 		/* Drawing Lives Left */
 		drawImage(startY, livesStart, 40, 80, (short int *) LIVES.pixel_data);
 		for(int i = 0; i < state.livesLeft; i++) {
-			drawImage(220 , ((i * 40) + 80 + 475), 40, 40, (short int *) PLAYERIMAGE.pixel_data);
+			drawImage(startY , ((i * 40) + 80 + livesStart), 40, 40, (short int *) PLAYERIMAGE.pixel_data);
 		}
 
 		/* Drawing Moves Left */
@@ -404,7 +404,7 @@ void drawFB() {
 void * objectThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		sleep(1);
+		delay(625);
 		int startYLoop;
 		int endYLoop;
 		int counter;

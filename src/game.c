@@ -279,7 +279,7 @@ void initState(shared * state) {
  *          The type of gift.
  */
 void updateGift(shared * state, int y, int x, char type) {
-    state->gift.type = GIFT1;
+    state->gift.type = type;
     state->gift.posY = y;
     state->gift.posX = x;
     state->gift.velocity = 0;
@@ -384,7 +384,7 @@ void checkGift(shared * state) {
         }
         updateGift(state, 0, 0, GIFT1);
     } else {
-        updateGift(state, state->gift.posY, state->gift.posX, GIFT1);
+        updateGift(state, state->gift.posY, state->gift.posX, state->gift.type);
     }
 }
 
