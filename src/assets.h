@@ -38,6 +38,7 @@
 #include "GRNBORDER.h"
 #include "BLUBORDER.h"
 #include "REDBORDER.h"
+#include "LevelBorder.h"
 #include "TILE.h"
 #include "CASTLE.h"
 #include "WATER.h"

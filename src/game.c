@@ -447,7 +447,7 @@ void checkCell(shared * state) {
     }
     if(state->player.posY <= 6) {
         state->scene = 2;
-    } else {
+    } else if(state->player.posY <= 11) {
         state->scene = 1;
     }
 }

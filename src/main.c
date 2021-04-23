@@ -116,6 +116,9 @@ void refreshBoard() {
 				case TILE:
 					imagePtr = (short int *) TILEIMAGE.pixel_data;
 					break;
+				case PURBORDER:
+					imagePtr = (short int *) LevelBorder.pixel_data;
+					break;
 				case SPACESHIP1:
 					imagePtr = (short int *) SPACESHIP1IMAGE.pixel_data;
 					break;
@@ -427,8 +430,12 @@ void * objectThread() {
 			if((x + v) < CELLSX && (x + v) >= 0) {
 				x = x + v;
 			} else {
-				if((x + v) >= CELLSX) x = 0;
-				else x = CELLSX - 1;
+				state.livesLeft -= 1;
+                if(state.livesLeft <= 0) {
+                    state.loseFlag = true;
+                }
+                state.scene = 1;
+                updatePlayer(&state, PLAYER, 21, (CELLSX / 2), 0);
 			}
 			updatePlayer(&state, PLAYER, state.player.posY, x, v);
 		}
