@@ -201,7 +201,6 @@ void updateCell(shared * state, char type, int y, int x, int velocity, int objsI
     state->objs[objsID].posX = x;
     state->objs[objsID].posY = y;
     state->objs[objsID].velocity = velocity;
-    state->gameMap[y][x] = type;
 }
 
 /**
@@ -223,7 +222,6 @@ void updatePlayer(shared * state, char type, int y, int x, int velocity) {
     state->player.posX = x;
     state->player.posY = y;
     state->player.velocity = velocity;
-    state->gameMap[y][x] = type;
 }
 
 /**
@@ -313,9 +311,26 @@ void updateValuePack(shared * state, int y, int x, char type) {
     state->valuePack.posY = y;
     state->valuePack.posX = x;
     state->valuePack.velocity = 0;
-    if(!(y == 0) && !(x == 0)) {
-        state->gameMap[y][x] = type;
+}
+
+/**
+ * Updates the gameMap. 
+ * 
+ * @param state
+ *              The game's state.
+ */
+void updateGameMap(shared  * state) {
+    int counter = 0;
+    for(int i = 0; i < CELLSY; i++) {
+        for(int j = 0; j < CELLSX; j++) {
+            state->gameMap[i][j] = state->objs[counter].type;
+            counter++;
+        }
     }
+    if(!(state->valuePack.posY == 0) && !(state->valuePack.posX == 0)) {
+        state->gameMap[state->valuePack.posY][state->valuePack.posX] = state->valuePack.type;
+    }
+    state->gameMap[state->player.posY][state->player.posX] = PLAYER;
 }
 
 /**
@@ -475,5 +490,6 @@ void checkCell(shared * state) {
             }
         }
     }
+    updateGameMap(state);
     state->refreshScreen = true;
 }

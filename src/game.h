@@ -93,6 +93,7 @@ void loadGameMap(shared * state);
 void updateCell(shared * state, char type, int x, int y, int velocity, int objsID);
 void updatePlayer(shared * state, char type, int y, int x, int velocity);
 void updateValuePack(shared * state, int y, int x, char type);
+void updateGameMap(shared  * state);
 void initState(shared * state);
 int getRandomNum(shared * state, int lowerLimit, int upperLimit);
 int getRandomNumNONTHREADS(int lowerLimit, int upperLimit);
