@@ -405,24 +405,20 @@ void drawFB() {
  */
 void * objectThread() {
     while(true) {
-        while(state.showStartMenu || state.showGameMenu) {}
+        while(state.showStartMenu || state.showGameMenu || state.winFlag || state.loseFlag) {}
 		delay(625);
-		int counter = 0;
-		for (int i = 0; i < CELLSY; i++) {
-			for(int j = 0; j < CELLSX; j++) {
-				int x = state.objs[counter].posX;
-				int v = state.objs[counter].velocity;
-				if (v != 0) {
-					if((x + v) < CELLSX && (x + v) >= 0) {
-						x = x + v;
-					} else {
-						if((x + v) >= CELLSX) x = 0;
-						else x = CELLSX - 1;
-					}
+		for (int i = 0; i < (CELLSY * CELLSX); i++) {
+			int x = state.objs[i].posX;
+			int v = state.objs[i].velocity;
+			if (v != 0) {
+				if((x + v) < CELLSX && (x + v) >= 0) {
+					x = x + v;
+				} else {
+					if((x + v) >= CELLSX) x = 0;
+					else x = CELLSX - 1;
 				}
-				updateCell(&state, state.objs[counter].type, state.objs[counter].posY, x, v, counter);
-				counter++;
 			}
+			updateCell(&state, state.objs[i].type, state.objs[i].posY, x, v, i);
 		}
 		int x = state.player.posX;
 		int v = state.player.velocity;
@@ -447,7 +443,9 @@ void * objectThread() {
  * The function the will handle the draw thread. 
  */
 void * drawThread() {
+	state.refreshScreen = true;
 	while(true) {
+		while(!state.refreshScreen) {}
 		if(state.showStartMenu) { // Checks if we are in the start menu.
 			drawStartScreen();
 		} else if(state.winFlag || state.loseFlag) {
@@ -462,6 +460,7 @@ void * drawThread() {
 			drawInfoBar();
 		}
 		drawFB();
+		state.refreshScreen = false;
 	}
 }
 
@@ -474,38 +473,50 @@ void * controllerThread() {
 		if(state.showStartMenu) { // Checks if we are in the start menu.
 			if((button == JD) && (activeButton == 1)) {
 				activeButton = 2;
+				state.refreshScreen = true;
 			} else if((button == JU) && (activeButton == 2)) {
 				activeButton = 1;
+				state.refreshScreen = true;
 			} else if((button == A) && (activeButton == 1)) { // Starts game.
 				state.showStartMenu = false;
 				activeButton = 1;
+				state.refreshScreen = true;
 			} else if((button == A) && (activeButton == 2)) { // Exits game.
 				state.gameOver = true;
+				state.refreshScreen = true;
 			}
 		} else if(state.winFlag || state.loseFlag) {
 			if(button != -1) {
 				state.showStartMenu = true;
 				initState(&state);
+				state.refreshScreen = true;
 			}
 		} else if(state.showGameMenu) { // Checks if the game is paused.
 			if((button == JD) && (activeButton == 1)) {
 				activeButton = 2;
+				state.refreshScreen = true;
 			} else if((button == JU) && (activeButton == 2)) {
 				activeButton = 1;
-			} else if((button == A) && (activeButton == 1)) { // Restarts game.
-				state.showGameMenu = false;
+				state.refreshScreen = true;
+			} else if((button == A) && (activeButton == 1)) { // Restarts game
 				initState(&state);
+				state.showStartMenu = false;
+				state.showGameMenu = false;
+				state.refreshScreen = true;
 			} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
 				state.showGameMenu = false;
 				state.showStartMenu = true;
+				state.refreshScreen = true;
 				initState(&state);
 			} else if((button == STR)) {
 				state.showGameMenu = false;
 				activeButton = 1;
+				state.refreshScreen = true;
 			}
 		} else {
 			if(button == STR) { // Pauses the game.
 				state.showGameMenu = true;
+				state.refreshScreen = true;
 			} else {
 				if((button == JU) || (button == JD) || (button == JR) || (button == JL)) {
 					movePlayer(&state, button);
@@ -520,7 +531,7 @@ void * controllerThread() {
  */
 void * timeThread() {
 	while(true) {
-		while(state.showStartMenu || state.showGameMenu) {}
+		while(state.showStartMenu || state.showGameMenu || state.winFlag || state.loseFlag) {}
 		int timeLeft = state.timeLeft;
 		timeLeft -= 1;
 		state.timeLeft = timeLeft;

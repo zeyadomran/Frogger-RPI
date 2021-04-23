@@ -92,7 +92,7 @@ void loadGameMap(shared * state) {
                         updateCell(state, TURTLE, i, j, 1, counter);
                     }
                     lastTurtle2++;
-                } else if(lastTurtle2 > 3) {
+                } else if(lastTurtle2 > 1) {
                     updateCell(state, WATER, i, j, 1, counter);
                     randNum = getRandomNumNONTHREADS(1, 3);
                     if(randNum == 2) {
@@ -287,8 +287,10 @@ void initState(shared * state) {
     state->livesLeft = 4;
     state->movesLeft = 100;
     state->highestLane = 21;
+    state->highestLevel = 1;
     state->winFlag = false;
     state->loseFlag = false;
+    state->refreshScreen = false;
     state->timeLeft = 240;
     state->timePlaying = 0;
     loadGameMap(state);
@@ -364,6 +366,11 @@ void movePlayer(shared * state, int direction) {
             state->loseFlag = true;
         } else {
             updatePlayer(state, PLAYER, y, x, state->player.velocity);
+            if(state->player.posY <= 6) {
+                state->scene = 2;
+            } else if(state->player.posY >= 11) {
+                state->scene = 1;
+            }
         }
         checkCell(state);
     }
@@ -444,21 +451,21 @@ void checkCell(shared * state) {
                 state->livesLeft -= 1;
                 if(state->livesLeft <= 0) {
                     state->loseFlag = true;
+                    break;
                 }
                 state->scene = 1;
                 updatePlayer(state, PLAYER, 21, (CELLSX / 2), 0);
             } else if(type == WINZONE) {
                 state->winFlag = true;
             } else if((type == LOG) || (type == TURTLE)) {
-                updatePlayer(state, PLAYER, y, x, state->objs[i].velocity);
+                int v = state->objs[i].velocity;
+                if(state->player.velocity != v) {
+                    updatePlayer(state, PLAYER, y, x, v);
+                }
             } else {
                 updatePlayer(state, PLAYER, y, x, 0);
             }
         }
     }
-    if(state->player.posY <= 6) {
-        state->scene = 2;
-    } else if(state->player.posY <= 11) {
-        state->scene = 1;
-    }
+    state->refreshScreen = true;
 }
