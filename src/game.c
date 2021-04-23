@@ -371,6 +371,13 @@ void movePlayer(shared * state, int direction) {
             } else if(state->player.posY >= 11) {
                 state->scene = 1;
             }
+            if(y == 16 && state->highestLevel < 2) {
+                state->highestLevel == 2;
+            } else if(y == 11 && state->highestLevel < 3) {
+                state->highestLevel == 3;
+            } else if(y == 6 && state->highestLevel < 4) {
+                state->highestLevel == 4;
+            }
         }
         checkCell(state);
     }
@@ -454,6 +461,7 @@ void checkCell(shared * state) {
                     break;
                 }
                 state->scene = 1;
+                state->highestLevel = 1;
                 updatePlayer(state, PLAYER, 21, (CELLSX / 2), 0);
             } else if(type == WINZONE) {
                 state->winFlag = true;

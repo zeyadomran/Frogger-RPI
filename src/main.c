@@ -541,14 +541,22 @@ void * timeThread() {
 		if(state.timeLeft <= 0) {
 			state.loseFlag = true;
 		}
-		if(state.timePlaying == 30) {
-			state.timePlaying = 0;
+		if(state.timePlaying >= 30) {
 			int x = getRandomNum(&state, 0, (CELLSX - 1));
 			int y;
-			if(state.scene == 1) {
-				y = getRandomNum(&state, 5, (CELLSY - 1));
-			} else {
-				y = getRandomNum(&state, 2, 16);
+			switch(state.highestLevel) {
+				case 1:
+					y = getRandomNum(&state, 17, 20);
+					break;
+				case 2:
+					y = getRandomNum(&state, 12, 15);
+					break;
+				case 3:
+					y = getRandomNum(&state, 7, 10);
+					break;
+				case 4:
+					y = getRandomNum(&state, 2, 5);
+					break;
 			}
 			int type = getRandomNum(&state, 1, 5);
 			switch(type) {
@@ -568,6 +576,7 @@ void * timeThread() {
 					updateValuePack(&state, y, x, VALUEPACK5);
 					break;
 			}
+			state.refreshScreen = true;
 		}
 		sleep(1);
 	}
