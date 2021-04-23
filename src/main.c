@@ -429,6 +429,7 @@ void * objectThread() {
 		if(v != 0) {
 			if((x + v) < CELLSX && (x + v) >= 0) {
 				x = x + v;
+				updatePlayer(&state, PLAYER, state.player.posY, x, v);
 			} else {
 				state.livesLeft -= 1;
                 if(state.livesLeft <= 0) {
@@ -437,7 +438,6 @@ void * objectThread() {
                 state.scene = 1;
                 updatePlayer(&state, PLAYER, 21, (CELLSX / 2), 0);
 			}
-			updatePlayer(&state, PLAYER, state.player.posY, x, v);
 		}
 		checkCell(&state);
     }

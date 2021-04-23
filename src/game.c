@@ -38,22 +38,22 @@ void loadGameMap(shared * state) {
                 break;
             // Challenge 4
             case 2:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, ZOMBIE2, i, j, -1, counter);
                 else updateCell(state, TILE, i, j, -1, counter);
                 break;
             case 3:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, ZOMBIE1, i, j, 1, counter);
                 else updateCell(state, TILE, i, j, 1, counter);
                 break;
             case 4:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, ZOMBIE2, i, j, -1, counter);
                 else updateCell(state, TILE, i, j, -1, counter);
                 break;
             case 5:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, ZOMBIE1, i, j, 1, counter);
                 else updateCell(state, TILE, i, j, 1, counter);
                 break;
@@ -62,22 +62,22 @@ void loadGameMap(shared * state) {
                 break;
             // Challenge 3
             case 7:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, SPACESHIP2, i, j, -1, counter);
                 else updateCell(state, SPACE, i, j, -1, counter);
                 break;
             case 8:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, SPACESHIP1, i, j, 1, counter);
                 else updateCell(state, SPACE, i, j, 1, counter);
                 break;
             case 9:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, SPACESHIP2, i, j, -1, counter);
                 else updateCell(state, SPACE, i, j, -1, counter);
                 break;
             case 10:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, SPACESHIP1, i, j, 1, counter);
                 else updateCell(state, SPACE, i, j, 1, counter);
                 break;
@@ -87,14 +87,14 @@ void loadGameMap(shared * state) {
             // Challenge 2
             case 12:
                 if(lastTurtle2 <= 1) {
-                    randNum = getRandomNum(state, 0, 1);
+                    randNum = getRandomNumNONTHREADS(0, 1);
                     if(randNum == lastTurtle2) {
                         updateCell(state, TURTLE, i, j, 1, counter);
                     }
                     lastTurtle2++;
                 } else if(lastTurtle2 > 3) {
                     updateCell(state, WATER, i, j, 1, counter);
-                    randNum = getRandomNum(state, 1, 3);
+                    randNum = getRandomNumNONTHREADS(1, 3);
                     if(randNum == 2) {
                         lastTurtle2 = 0;
                     }
@@ -102,14 +102,14 @@ void loadGameMap(shared * state) {
                 break;
             case 13:
                 if(lastLog1 <= 2) {
-                    randNum = getRandomNum(state, 0, 2);
+                    randNum = getRandomNumNONTHREADS(0, 2);
                     if(randNum == lastLog1) {
                         updateCell(state, LOG, i, j, -1, counter);
                     }
                     lastLog1++;
                 } else if(lastLog1 > 2) {
                     updateCell(state, WATER, i, j, -1, counter);
-                    randNum = getRandomNum(state, 1, 3);
+                    randNum = getRandomNumNONTHREADS(1, 3);
                     if(randNum == 2) {
                         lastLog1 = 0;
                     }
@@ -117,14 +117,14 @@ void loadGameMap(shared * state) {
                 break;
             case 14:
                 if(lastLog2 <= 2) {
-                    randNum = getRandomNum(state, 0, 2);
+                    randNum = getRandomNumNONTHREADS(0, 2);
                     if(randNum == lastLog2) {
                         updateCell(state, LOG, i, j, 1, counter);
                     }
                     lastLog2++;
                 } else if(lastLog2 > 2) {
                     updateCell(state, WATER, i, j, 1, counter);
-                    randNum = getRandomNum(state, 1, 3);
+                    randNum = getRandomNumNONTHREADS(1, 3);
                     if(randNum == 2) {
                         lastLog2 = 0;
                     }
@@ -145,22 +145,22 @@ void loadGameMap(shared * state) {
                 break;
             // Challenge 1
             case 17:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, CAR1, i, j, -1, counter);
                 else updateCell(state, ROAD, i, j, -1, counter);
                 break;
             case 18:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, CAR2, i, j, 1, counter);
                 else updateCell(state, ROAD, i, j, 1, counter);
                 break;
             case 19:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, CAR1, i, j, -1, counter);
                 else updateCell(state, ROAD, i, j, -1, counter);
                 break;
             case 20:
-                randNum = getRandomNum(state, 0, 6);
+                randNum = getRandomNumNONTHREADS(0, 6);
                 if(randNum == 1) updateCell(state, CAR2, i, j, 1, counter);
                 else updateCell(state, ROAD, i, j, 1, counter);
                 break;
@@ -227,7 +227,7 @@ void updatePlayer(shared * state, char type, int y, int x, int velocity) {
 }
 
 /**
- * Get a random number in a certain range.
+ * Get a random number in a certain range for threads only.
  * 
  * @param state
  *              The game's state.
@@ -256,6 +256,17 @@ int getRandomNum(shared * state, int lowerLimit, int upperLimit) {
     state->seed = next;
     return (((result % ((upperLimit - lowerLimit + 1))) + lowerLimit)); 
 } 
+
+/**
+ * Get a random number in a certain range for non threads.
+ * 
+ * @param lowerLimit
+ *              The lowest number you wish to get.
+ * @param upperLimit
+ *              The highest number you wish to get.
+ * @return The number generated.
+*/
+int getRandomNumNONTHREADS(int lowerLimit, int upperLimit) { return ((rand() % ((upperLimit - lowerLimit + 1))) + lowerLimit); } 
 
 /**
  * Initializes the state.

@@ -93,6 +93,7 @@ void updatePlayer(shared * state, char type, int y, int x, int velocity);
 void updateValuePack(shared * state, int y, int x, char type);
 void initState(shared * state);
 int getRandomNum(shared * state, int lowerLimit, int upperLimit);
+int getRandomNumNONTHREADS(int lowerLimit, int upperLimit);
 void movePlayer(shared * state, int direction);
 void checkValuePack(shared * state);
 void checkCell(shared * state);
