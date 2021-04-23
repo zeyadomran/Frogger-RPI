@@ -12,6 +12,7 @@
 /* Object type definitions. */
 #define CASTLE      'C'
 #define WINZONE     'A'
+#define PURBORDER   'H'
 #define BLUBORDER   'B'
 #define REDBORDER   'R'
 #define GRNBORDER   'G'
@@ -35,11 +36,11 @@
 #define PLAYER      'P'
 
 // Value Packs
-#define GIFT1       '1'
-#define GIFT2       '2'
-#define GIFT3       '3'
-#define GIFT4       '4'
-#define GIFT5       '5' 
+#define VALUEPACK1  '1'
+#define VALUEPACK2  '2'
+#define VALUEPACK3  '3'
+#define VALUEPACK4  '4'
+#define VALUEPACK5  '5' 
 
 /* SNES Controller Buttons */
 #define B 	1
@@ -62,17 +63,12 @@ typedef struct {
     int velocity;
 } Object;
 
-typedef struct {
-    char type;
-    int posX;
-} GameMap;
-
 /* The game's shared struct. */
 typedef struct {
-    GameMap gameMap[CELLSY][CELLSX];
+    char gameMap[CELLSY][CELLSX];
     Object objs[CELLSY * CELLSX];
     Object player;
-    Object gift;
+    Object valuePack;
     char *stage;
     int scene;
     unsigned int * seed;
@@ -94,11 +90,11 @@ typedef struct {
 void loadGameMap(shared * state);
 void updateCell(shared * state, char type, int x, int y, int velocity, int objsID);
 void updatePlayer(shared * state, char type, int y, int x, int velocity);
-void updateGift(shared * state, int y, int x, char type);
+void updateValuePack(shared * state, int y, int x, char type);
 void initState(shared * state);
 int getRandomNum(shared * state, int lowerLimit, int upperLimit);
 void movePlayer(shared * state, int direction);
-void checkGift(shared * state);
+void checkValuePack(shared * state);
 void checkCell(shared * state);
 
 #endif

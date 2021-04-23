@@ -81,19 +81,20 @@ void refreshBoard() {
 		startYLoop = 0;
 		endYLoop = 16;
 	}
+	int counter = 0;
 	for(int i = startYLoop; i < endYLoop; i++) {
 		for(int j = 0; j < CELLSX; j++) {
-			char cellType = state.gameMap[i][j].type;
+			char cellType = state.gameMap[i][j];
 			short int *imagePtr;
 			switch(cellType) {
 				case PLAYER:
 					imagePtr = (short int *) PLAYERIMAGE.pixel_data;
 					break;
 				case CASTLE:
-					imagePtr = (short int *) GRNBORDERIMAGE.pixel_data;
+					imagePtr = (short int *) CASTLEIMAGE.pixel_data;
 					break;
 				case WINZONE:
-					imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
+					imagePtr = (short int *) TILEIMAGE.pixel_data;
 					break;
 				case BLUBORDER:
 					imagePtr = (short int *) BLUBORDERIMAGE.pixel_data;
@@ -114,7 +115,7 @@ void refreshBoard() {
 					imagePtr = (short int *) ZOMBIE2IMAGE.pixel_data;
 					break;
 				case TILE:
-					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
+					imagePtr = (short int *) TILEIMAGE.pixel_data;
 					break;
 				case SPACESHIP1:
 					imagePtr = (short int *) SPACESHIP1IMAGE.pixel_data;
@@ -143,19 +144,19 @@ void refreshBoard() {
 				case ROAD:
 					imagePtr = (short int *) BLKBORDERIMAGE.pixel_data;
 					break;
-				case GIFT1:
+				case VALUEPACK1:
 					imagePtr = (short int *) GIFT1IMAGE.pixel_data;
 					break;
-				case GIFT2:
+				case VALUEPACK2:
 					imagePtr = (short int *) GIFT3IMAGE.pixel_data;
 					break;
-				case GIFT3:
+				case VALUEPACK3:
 					imagePtr = (short int *) GIFT4IMAGE.pixel_data;
 					break;
-				case GIFT4:
+				case VALUEPACK4:
 					imagePtr = (short int *) COIN.pixel_data;
 					break;
-				case GIFT5:
+				case VALUEPACK5:
 					imagePtr = (short int *) Heart.pixel_data;
 					break;
 				default:
@@ -163,7 +164,7 @@ void refreshBoard() {
 			}
 			/* Calculating Image Position */
 			int starty;
-			int startx = (STARTX + state.gameMap[i][j].posX);
+			int startx= (STARTX + (j * 40));
 
 			if(state.scene == 1) {
 				starty = (STARTY + ((i - 5) * 40));
@@ -173,6 +174,7 @@ void refreshBoard() {
 
 			// Draw the loaded image.
 			drawImage(starty, startx, 40, 40, imagePtr);
+			counter++;
 		}
 	}
 }
@@ -204,9 +206,9 @@ void drawPauseMenu() {
 
 	// Initializing Variables based on state
 	if(activeButton == 1) {
-		pauseMenuPtr = (short int *) PauseMenu1.pixel_data;
+		pauseMenuPtr = (short int *) PAUSEMENU1.pixel_data;
 	} else {
-		pauseMenuPtr = (short int *) PauseMenu2.pixel_data;
+		pauseMenuPtr = (short int *) PAUSEMENU2.pixel_data;
 	}
 
 	int starty = (STARTY + 120);
@@ -306,7 +308,7 @@ void drawInfoBar() {
 		numToString(scoreNum, num);
 		drawImage(250, 475, 40, 80, (short int *) SCORE.pixel_data);
 		for(int i = 0; i < 3; i++) {
-			drawImage(250 , ((i * 40) + 80 + 475), 40, 40, getNumPicture(scoreNum[i]));
+			drawImage(250 , ((i * 40) + 555), 40, 40, getNumPicture(scoreNum[i]));
 		}
 	} else {
 		/* Drawing Lives Left */
@@ -369,7 +371,7 @@ void drawImage(int starty, int startx, int height, int width, short int *ptr) {
 	for(int y = 0; y < height; y++) {
 		for(int x = 0; x < width; x++) {
 			pixel.color = ptr[i];
-			pixel.x = ((startx + x) % WIDTH);
+			pixel.x = startx + x;
 			pixel.y = starty + y;
 			stagePixel(&pixel);
 			i++;
@@ -402,7 +404,7 @@ void drawFB() {
 void * objectThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
-		delay(300);
+		delay(625);
 		int startYLoop;
 		int endYLoop;
 		int counter;
@@ -421,11 +423,11 @@ void * objectThread() {
 				int x = state.objs[counter].posX;
 				int v = state.objs[counter].velocity;
 				if (v != 0) {
-					if((x + v) < WIDTH && (x + v) >= 0) {
+					if((x + v) < CELLSX && (x + v) >= 0) {
 						x = x + v;
 					} else {
-						if((x + v) >= WIDTH) x = 0;
-						else x = WIDTH - 40;
+						if((x + v) >= CELLSX) x = 0;
+						else x = CELLSX - 1;
 					}
 				}
 				updateCell(&state, state.objs[counter].type, state.objs[counter].posY, x, v, counter);
@@ -435,11 +437,11 @@ void * objectThread() {
 		int x = state.player.posX;
 		int v = state.player.velocity;
 		if(v != 0) {
-			if((x + v) < WIDTH && (x + v) >= 0) {
+			if((x + v) < CELLSX && (x + v) >= 0) {
 				x = x + v;
 			} else {
-				if((x + v) >= WIDTH) x = 0;
-				else x = WIDTH - 40;
+				if((x + v) >= CELLSX) x = 0;
+				else x = CELLSX - 1;
 			}
 			updatePlayer(&state, PLAYER, state.player.posY, x, v);
 		}
@@ -496,13 +498,16 @@ void * controllerThread() {
 				activeButton = 2;
 			} else if((button == JU) && (activeButton == 2)) {
 				activeButton = 1;
-			} else if((button == A) && (activeButton == 1)) { // Resumes game.
+			} else if((button == A) && (activeButton == 1)) { // Restarts game.
 				state.showGameMenu = false;
-				activeButton = 1;
+				initState(&state);
 			} else if((button == A) && (activeButton == 2)) { // Quits game & displays start menu.
 				state.showGameMenu = false;
 				state.showStartMenu = true;
 				initState(&state);
+			} else if((button == STR)) {
+				state.showGameMenu = false;
+				activeButton = 1;
 			}
 		} else {
 			if(button == STR) { // Pauses the game.
@@ -543,19 +548,19 @@ void * timeThread() {
 			int type = getRandomNum(&state, 1, 5);
 			switch(type) {
 				case 1:
-					updateGift(&state, y, x, GIFT1);
+					updateValuePack(&state, y, x, VALUEPACK1);
 					break;
 				case 2:
-					updateGift(&state, y, x, GIFT2);
+					updateValuePack(&state, y, x, VALUEPACK2);
 					break;
 				case 3:
-					updateGift(&state, y, x, GIFT3);
+					updateValuePack(&state, y, x, VALUEPACK3);
 					break;
 				case 4:
-					updateGift(&state, y, x, GIFT4);
+					updateValuePack(&state, y, x, VALUEPACK4);
 					break;
 				case 5:
-					updateGift(&state, y, x, GIFT5);
+					updateValuePack(&state, y, x, VALUEPACK5);
 					break;
 			}
 		}
