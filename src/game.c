@@ -177,7 +177,7 @@ void loadGameMap(shared * state) {
             counter += 1;
         }
     }
-    updateGift(state, 0, 0, VALUEPACK1);
+    updateValuePack(state, 0, 0, VALUEPACK1);
 }
 
 /**
