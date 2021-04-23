@@ -429,6 +429,7 @@ void * objectThread() {
 			} else {
 				state.livesLeft -= 1;
                 if(state.livesLeft <= 0) {
+					state.updateScreen = true;
                     state.loseFlag = true;
                 }
                 state.scene = 1;
@@ -451,6 +452,11 @@ void * drawThread() {
 		} else if(state.winFlag || state.loseFlag) {
 			int score = (state.timeLeft + state.movesLeft + state.livesLeft) * 1.4;
 			if(state.winFlag && (state.score < score)) state.score = score;
+			if(state.updateScreen) {
+				updateGameMap(&state);
+				refreshBoard();
+				state.updateScreen = false;
+			}
 			drawWinLoseBanner();
 			drawInfoBar();
 		} else if(state.showGameMenu) {
@@ -539,10 +545,12 @@ void * timeThread() {
 		timePlaying += 1;
 		state.timePlaying = timePlaying;
 		if(state.timeLeft <= 0) {
+			state.updateScreen = true;
 			state.loseFlag = true;
 		}
-		if(state.timePlaying >= 30) {
-			int x = getRandomNum(&state, 0, (CELLSX - 1));
+		if((state.timePlaying == 30)) {
+			state.timePlaying = 0;
+			int x = getRandomNum(&state, 1, (CELLSX - 2));
 			int y;
 			switch(state.highestLevel) {
 				case 1:

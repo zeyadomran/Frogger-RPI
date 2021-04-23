@@ -81,6 +81,7 @@ typedef struct {
     int highestLane;
     int highestLevel;
     bool refreshScreen;
+    bool updateScreen;
     bool winFlag;
     bool loseFlag;
     int timeLeft;

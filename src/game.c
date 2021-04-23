@@ -177,6 +177,7 @@ void loadGameMap(shared * state) {
             counter += 1;
         }
     }
+    updateGameMap(state);
     updateValuePack(state, 0, 0, VALUEPACK1);
 }
 
@@ -288,6 +289,7 @@ void initState(shared * state) {
     state->highestLevel = 1;
     state->winFlag = false;
     state->loseFlag = false;
+    state->updateScreen = false;
     state->refreshScreen = false;
     state->timeLeft = 240;
     state->timePlaying = 0;
@@ -320,12 +322,8 @@ void updateValuePack(shared * state, int y, int x, char type) {
  *              The game's state.
  */
 void updateGameMap(shared  * state) {
-    int counter = 0;
-    for(int i = 0; i < CELLSY; i++) {
-        for(int j = 0; j < CELLSX; j++) {
-            state->gameMap[i][j] = state->objs[counter].type;
-            counter++;
-        }
+    for(int i = 0; i < (CELLSY * CELLSX); i++) {
+        state->gameMap[state->objs[i].posY][state->objs[i].posX] = state->objs[i].type;
     }
     if(!(state->valuePack.posY == 0) && !(state->valuePack.posX == 0)) {
         state->gameMap[state->valuePack.posY][state->valuePack.posX] = state->valuePack.type;
@@ -378,6 +376,7 @@ void movePlayer(shared * state, int direction) {
     if(playerMoved) {
         state->movesLeft -= 1;
         if(state->movesLeft <= 0) {
+            state->updateScreen = true;
             state->loseFlag = true;
         } else {
             updatePlayer(state, PLAYER, y, x, state->player.velocity);
@@ -387,11 +386,11 @@ void movePlayer(shared * state, int direction) {
                 state->scene = 1;
             }
             if(y == 16 && state->highestLevel < 2) {
-                state->highestLevel == 2;
+                state->highestLevel = 2;
             } else if(y == 11 && state->highestLevel < 3) {
-                state->highestLevel == 3;
+                state->highestLevel = 3;
             } else if(y == 6 && state->highestLevel < 4) {
-                state->highestLevel == 4;
+                state->highestLevel = 4;
             }
         }
         checkCell(state);
@@ -472,11 +471,11 @@ void checkCell(shared * state) {
             ) {
                 state->livesLeft -= 1;
                 if(state->livesLeft <= 0) {
+                    state->updateScreen = true;
                     state->loseFlag = true;
                     break;
                 }
                 state->scene = 1;
-                state->highestLevel = 1;
                 updatePlayer(state, PLAYER, 21, (CELLSX / 2), 0);
             } else if(type == WINZONE) {
                 state->winFlag = true;
