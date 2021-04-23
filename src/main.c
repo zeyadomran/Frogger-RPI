@@ -52,7 +52,6 @@ int main(void) {
 	pthread_t timeThr; 
 	pthread_create(&timeThr, NULL, timeThread, NULL);
 
-	int seed = time(0) + 106;
 	/* Program loop */
 	while(!state.gameOver) {}
 
@@ -405,19 +404,7 @@ void * objectThread() {
     while(true) {
         while(state.showStartMenu || state.showGameMenu) {}
 		delay(625);
-		int startYLoop;
-		int endYLoop;
-		int counter;
-		if(state.scene == 1) {
-			startYLoop = 5;
-			endYLoop = CELLSY;
-			counter = (5 * CELLSX);
-		} else {
-			startYLoop = 0;
-			endYLoop = 16;
-			counter = 0;
-		}
-		counter = 0;
+		int counter = 0;
 		for (int i = 0; i < CELLSY; i++) {
 			for(int j = 0; j < CELLSX; j++) {
 				int x = state.objs[counter].posX;
